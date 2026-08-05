@@ -1,0 +1,83 @@
+/* ---------- Dashboard page ---------- */
+
+.dashboard {
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+.navbar {
+  background-color: var(--navbar-bg);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.navbar-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-icon {
+  font-size: 1.3rem;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-main {
+  padding: 32px 24px 60px;
+}
+
+.dashboard-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.dashboard-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.dashboard-stats {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 640px) {
+  .navbar-container {
+    padding: 14px 16px;
+  }
+
+  .dashboard-main {
+    padding: 24px 16px 40px;
+  }
+
+  .navbar-title {
+    font-size: 1.05rem;
+  }
+}

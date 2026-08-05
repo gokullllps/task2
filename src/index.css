@@ -1,58 +1,99 @@
-/* ---------- Global reset & theme variables ---------- */
+/* ---------- Global Reset & Design System (Apple Liquid Glass / visionOS Aesthetic) ---------- */
 
 :root {
-  --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --transition-fast: 0.18s ease;
-  --transition-base: 0.3s ease;
+  --font-heading: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  --transition-fast: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-base: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Light theme (default) */
+/* Light Theme (Apple Liquid Glass & Frosted SaaS Aesthetic) */
 [data-theme='light'] {
-  --bg-primary: #f3f4f9;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --bg-input: #f9fafb;
-  --text-primary: #1e2130;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
-  --border-color: #e5e7eb;
-  --accent-color: #6366f1;
-  --accent-hover: #4f46e5;
-  --accent-soft: #eef0ff;
+  --bg-app: #f4f6f9;
+  --bg-primary: radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.05) 0%, transparent 60%), radial-gradient(circle at 90% 90%, rgba(5, 150, 105, 0.04) 0%, transparent 60%), #f4f6f9;
+  --bg-card: rgba(255, 255, 255, 0.88);
+  --bg-card-hover: rgba(255, 255, 255, 0.98);
+  --bg-input: rgba(248, 250, 252, 0.92);
+  --bg-sidebar: rgba(255, 255, 255, 0.88);
+
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+
+  --border-color: rgba(203, 213, 225, 0.65);
+  --border-glass: rgba(255, 255, 255, 0.95);
+
+  --accent-color: #059669;
+  --accent-hover: #047857;
+  --accent-soft: rgba(5, 150, 105, 0.1);
+  --accent-gradient: linear-gradient(135deg, #10b981, #059669);
+
   --danger-color: #ef4444;
   --danger-hover: #dc2626;
-  --success-color: #22c55e;
-  --shadow-color: rgba(15, 23, 42, 0.08);
-  --shadow-color-strong: rgba(15, 23, 42, 0.16);
-  --navbar-bg: #ffffff;
-  --gradient-start: #6366f1;
-  --gradient-end: #8b5cf6;
+  --danger-soft: rgba(239, 68, 68, 0.1);
+
+  --success-color: #10b981;
+  --success-soft: rgba(16, 185, 129, 0.1);
+
+  --warning-color: #f59e0b;
+  --warning-soft: rgba(245, 158, 11, 0.1);
+
+  --glass-blur: blur(18px) saturate(180%);
+  --shadow-glass: 0 10px 25px -4px rgba(15, 23, 42, 0.06), 0 4px 10px -2px rgba(15, 23, 42, 0.03), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  --shadow-strong: 0 20px 40px -8px rgba(15, 23, 42, 0.1), 0 8px 16px -4px rgba(15, 23, 42, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  --navbar-bg: rgba(255, 255, 255, 0.88);
+
+  --gradient-start: #10b981;
+  --gradient-end: #059669;
 }
 
-/* Dark theme */
+/* Dark Theme (Modern Sage Dark Dashboard - 100% UNTOUCHED) */
 [data-theme='dark'] {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-card: #1e293b;
-  --bg-input: #0f172a;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border-color: #334155;
-  --accent-color: #818cf8;
-  --accent-hover: #6366f1;
-  --accent-soft: #1e2547;
+  --bg-app: #0b1310;
+  --bg-primary: #0b1310;
+  --bg-card: rgba(17, 28, 24, 0.75);
+  --bg-card-hover: rgba(22, 38, 32, 0.9);
+  --bg-input: rgba(11, 19, 16, 0.75);
+  --bg-sidebar: rgba(11, 19, 16, 0.85);
+
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+
+  --border-color: rgba(216, 238, 228, 0.12);
+  --border-glass: rgba(255, 255, 255, 0.1);
+
+  --accent-color: #6fbf9e;
+  --accent-hover: #4faf8a;
+  --accent-soft: rgba(111, 191, 158, 0.2);
+  --accent-gradient: linear-gradient(135deg, #6fbf9e, #4faf8a);
+
   --danger-color: #f87171;
   --danger-hover: #ef4444;
+  --danger-soft: rgba(248, 113, 113, 0.15);
+
   --success-color: #4ade80;
-  --shadow-color: rgba(0, 0, 0, 0.35);
-  --shadow-color-strong: rgba(0, 0, 0, 0.5);
-  --navbar-bg: #1e293b;
-  --gradient-start: #4338ca;
-  --gradient-end: #6d28d9;
+  --success-soft: rgba(74, 222, 128, 0.15);
+
+  --warning-color: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.15);
+
+  --glass-blur: blur(16px);
+  --shadow-glass: 0 8px 30px rgba(0, 0, 0, 0.45);
+  --shadow-strong: 0 16px 40px rgba(0, 0, 0, 0.65);
+  --navbar-bg: rgba(11, 19, 16, 0.8);
+
+  --gradient-start: #4faf8a;
+  --gradient-end: #3e9473;
 }
 
 * {
@@ -64,14 +105,27 @@
 html,
 body {
   height: 100%;
+  width: 100%;
 }
 
 body {
-  font-family: var(--font-family);
-  background-color: var(--bg-primary);
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  background-attachment: fixed;
   color: var(--text-primary);
-  transition: background-color var(--transition-base), color var(--transition-base);
+  transition: background var(--transition-base), color var(--transition-base);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  color: var(--text-primary);
 }
 
 button {
@@ -82,7 +136,8 @@ button {
 }
 
 input,
-textarea {
+textarea,
+select {
   font-family: inherit;
   outline: none;
 }
@@ -92,16 +147,53 @@ a {
   color: inherit;
 }
 
-ul,
-li {
-  list-style: none;
+/* Theme morphing smooth transition on UI cards & containers */
+.glass-panel,
+.dashboard-layout,
+.navbar,
+.sidebar,
+.todo-card,
+.metric-card,
+.home-card,
+.profile-card,
+.settings-view-container {
+  transition: background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Accessible focus ring */
+*:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: var(--border-color);
   border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--accent-color);
 }

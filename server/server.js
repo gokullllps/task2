@@ -63,6 +63,16 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/calendar', calendarRoutes);
 
+// Root endpoint for live deployment checks
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Praskla Todo Backend API is live on Render',
+    health: '/api/health',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'Todo Backend API is running smoothly', timestamp: new Date().toISOString() });

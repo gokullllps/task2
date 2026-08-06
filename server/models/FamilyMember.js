@@ -49,5 +49,9 @@ const familyMemberSchema = new mongoose.Schema({
   },
 });
 
+familyMemberSchema.index({ user: 1, status: 1 });
+familyMemberSchema.index({ family: 1, status: 1 });
+familyMemberSchema.index({ family: 1, user: 1 });
+
 const FamilyMember = mongoose.model('FamilyMember', familyMemberSchema);
 export default FamilyMember;

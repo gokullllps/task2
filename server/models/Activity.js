@@ -34,5 +34,7 @@ const activitySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+activitySchema.index({ user: 1, createdAt: -1 });
+
 const Activity = mongoose.model('Activity', activitySchema);
 export default Activity;

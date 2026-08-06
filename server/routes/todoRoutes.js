@@ -35,7 +35,7 @@ const formatTodo = (t) => ({
 // @access  Private
 router.get('/', async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search, page, limit } = req.query;
 
     const userOrAssignCriteria = [
       { user: req.user._id },
@@ -65,10 +65,27 @@ router.get('/', async (req, res) => {
       };
     }
 
-    const todos = await Todo.find(query).sort({ createdAt: -1 });
+    let todosQuery = Todo.find(query).sort({ createdAt: -1 });
+
+    const totalCount = await Todo.countDocuments(query);
+
+    if (page && limit) {
+      const pageNum = parseInt(page, 10) || 1;
+      const limitNum = parseInt(limit, 10) || 20;
+      todosQuery = todosQuery.skip((pageNum - 1) * limitNum).limit(limitNum);
+    }
+
+    const todos = await todosQuery;
     const formattedTodos = todos.map(formatTodo);
 
-    return res.json({ success: true, count: formattedTodos.length, todos: formattedTodos });
+    return res.json({
+      success: true,
+      count: formattedTodos.length,
+      totalCount,
+      page: page ? parseInt(page, 10) : 1,
+      totalPages: limit ? Math.ceil(totalCount / parseInt(limit, 10)) : 1,
+      todos: formattedTodos,
+    });
   } catch (error) {
     console.error('[Get Todos Error]', error);
     return res.status(500).json({ success: false, message: error.message });

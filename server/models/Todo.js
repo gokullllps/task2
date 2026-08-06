@@ -66,5 +66,10 @@ const todoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+todoSchema.index({ user: 1, completed: 1 });
+todoSchema.index({ assignedUserId: 1, completed: 1 });
+todoSchema.index({ user: 1, createdAt: -1 });
+todoSchema.index({ assignedUsername: 1, completed: 1 });
+
 const Todo = mongoose.model('Todo', todoSchema);
 export default Todo;

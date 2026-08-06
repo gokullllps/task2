@@ -6,7 +6,7 @@ const connectDB = async () => {
   // Disable query buffering so Mongoose fails fast or succeeds cleanly instead of hanging 10s
   mongoose.set('bufferCommands', false);
 
-  const primaryUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/todoapp';
+  const primaryUri = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/todoapp';
 
   try {
     // Attempt connection to primary MongoDB

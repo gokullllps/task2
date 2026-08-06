@@ -15,12 +15,6 @@ export default function GlassCard({
       style={{
         padding: '24px',
         borderRadius: 'var(--radius-lg)',
-        background: 'var(--bg-card)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        border: '1px solid var(--border-color)',
-        boxShadow: 'var(--shadow-glass)',
-        transition: 'all var(--transition-base)',
         cursor: onClick ? 'pointer' : 'default',
         ...style,
       }}
@@ -30,3 +24,4 @@ export default function GlassCard({
     </div>
   );
 }
+

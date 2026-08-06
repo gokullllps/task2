@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { EyeIcon, EyeOffIcon, CheckIcon } from '../Icons';
 
 export function TextInput({
   id,
@@ -6,35 +7,69 @@ export function TextInput({
   type = 'text',
   value,
   onChange,
-  placeholder,
+  placeholder = '',
   error,
+  success = false,
   disabled = false,
   icon: Icon,
   autoComplete,
   className = '',
+  floating = false,
+  showPasswordToggle = false,
   ...props
 }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPasswordType = type === 'password';
+  const effectiveType = isPasswordType && showPassword ? 'text' : type;
+
   return (
-    <div className={`form-group ${className}`}>
-      {label && (
+    <div className={`form-group ${error ? 'has-error' : ''} ${success ? 'has-success' : ''} ${floating ? 'floating-group' : ''} ${className}`}>
+      {label && !floating && (
         <label htmlFor={id}>
           <span>{label}</span>
         </label>
       )}
+
       <div className="input-with-icon">
         <input
           id={id}
-          type={type}
+          type={effectiveType}
           value={value}
           onChange={onChange}
-          placeholder={placeholder}
+          placeholder={floating ? ' ' : placeholder}
           disabled={disabled}
           autoComplete={autoComplete}
-          className={error ? 'input-error' : ''}
+          className={`text-input ${error ? 'input-error' : ''} ${success ? 'input-success' : ''} ${floating ? 'floating-input' : ''}`}
           {...props}
         />
+
+        {floating && label && (
+          <label htmlFor={id} className="floating-label">
+            {label}
+          </label>
+        )}
+
         {Icon && <Icon size={18} className="field-icon" />}
+
+        {isPasswordType && showPasswordToggle && (
+          <button
+            type="button"
+            className="input-action-btn"
+            onClick={() => setShowPassword(!showPassword)}
+            tabIndex={-1}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+          </button>
+        )}
+
+        {success && !showPasswordToggle && (
+          <span className="input-success-icon" aria-hidden="true">
+            <CheckIcon size={16} />
+          </span>
+        )}
       </div>
+
       {error && <span className="error-text">{error}</span>}
     </div>
   );
@@ -76,3 +111,6 @@ export function SearchInput({
     </div>
   );
 }
+
+export default TextInput;
+

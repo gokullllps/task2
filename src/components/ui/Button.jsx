@@ -1,148 +1,139 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-export function PrimaryButton({
+export function Button({
   children,
   onClick,
   type = 'button',
-  disabled = false,
-  fullWidth = false,
-  block = false,
-  icon: Icon,
-  className = '',
+  variant = 'primary', // 'primary' | 'secondary' | 'danger' | 'success' | 'outline' | 'ghost' | 'icon'
   size = 'md', // 'sm' | 'md' | 'lg'
-  style = {},
-  ...props
-}) {
-  const isBlock = block || fullWidth;
-
-  const baseStyle = {
-    display: isBlock ? 'flex' : 'inline-flex',
-    width: isBlock ? '100%' : 'auto',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    height: size === 'sm' ? '36px' : size === 'lg' ? '52px' : '44px',
-    padding: size === 'sm' ? '6px 14px' : size === 'lg' ? '12px 28px' : '10px 20px',
-    borderRadius: '12px',
-    border: 'none',
-    background: 'var(--accent-color)',
-    color: '#ffffff',
-    fontSize: size === 'sm' ? '0.84rem' : size === 'lg' ? '1rem' : '0.92rem',
-    fontWeight: 700,
-    letterSpacing: '-0.01em',
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    opacity: disabled ? 0.6 : 1,
-    transition: 'all 200ms ease',
-    boxShadow: '0 4px 14px rgba(16, 185, 129, 0.25)',
-    ...style,
-  };
-
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      className={`primary-button ${className}`}
-      style={baseStyle}
-      {...props}
-    >
-      {Icon && <Icon size={size === 'sm' ? 14 : 18} />}
-      <span>{children}</span>
-    </button>
-  );
-}
-
-export function SecondaryButton({
-  children,
-  onClick,
-  type = 'button',
   disabled = false,
+  loading = false,
   fullWidth = false,
   block = false,
   danger = false,
   icon: Icon,
+  iconPosition = 'left',
   className = '',
-  size = 'md',
   style = {},
+  ariaLabel,
+  title,
   ...props
 }) {
-  const isBlock = block || fullWidth;
+  const [ripples, setRipples] = useState([]);
 
-  const baseStyle = {
-    display: isBlock ? 'flex' : 'inline-flex',
-    width: isBlock ? '100%' : 'auto',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    height: size === 'sm' ? '36px' : size === 'lg' ? '52px' : '44px',
-    padding: size === 'sm' ? '6px 14px' : size === 'lg' ? '12px 28px' : '10px 20px',
-    borderRadius: '12px',
-    border: danger ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid var(--border-color)',
-    background: danger ? 'rgba(239, 68, 68, 0.1)' : 'var(--bg-glass)',
-    color: danger ? 'var(--danger-color)' : 'var(--text-primary)',
-    fontSize: size === 'sm' ? '0.84rem' : size === 'lg' ? '1rem' : '0.92rem',
-    fontWeight: 700,
-    letterSpacing: '-0.01em',
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    opacity: disabled ? 0.6 : 1,
-    transition: 'all 200ms ease',
-    ...style,
+  const isBlock = block || fullWidth;
+  const effectiveVariant = danger && variant === 'secondary' ? 'danger' : variant;
+
+  const handlePointerDown = (e) => {
+    if (disabled || loading) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const rippleSize = Math.max(rect.width, rect.height);
+    const newRipple = { x, y, size: rippleSize, id: Date.now() };
+
+    setRipples((prev) => [...prev, newRipple]);
+    setTimeout(() => {
+      setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
+    }, 600);
   };
+
+  const handleClick = (e) => {
+    if (disabled || loading) {
+      e.preventDefault();
+      return;
+    }
+    if (onClick) onClick(e);
+  };
+
+  const classNames = [
+    'btn',
+    `btn-${effectiveVariant}`,
+    `btn-${size}`,
+    isBlock ? 'btn-block' : '',
+    loading ? 'btn-loading' : '',
+    disabled ? 'btn-disabled' : '',
+    className,
+  ].filter(Boolean).join(' ');
 
   return (
     <button
       type={type}
-      onClick={onClick}
-      disabled={disabled}
-      className={`secondary-button ${className}`}
-      style={baseStyle}
-      {...props}
-    >
-      {Icon && <Icon size={size === 'sm' ? 14 : 18} />}
-      <span>{children}</span>
-    </button>
-  );
-}
-
-export function IconButton({
-  icon: Icon,
-  onClick,
-  title,
-  ariaLabel,
-  danger = false,
-  size = 'md',
-  style = {},
-  ...props
-}) {
-  const dimension = size === 'sm' ? '32px' : size === 'lg' ? '44px' : '36px';
-
-  const baseStyle = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: dimension,
-    height: dimension,
-    borderRadius: '10px',
-    border: '1px solid var(--border-color)',
-    background: danger ? 'rgba(239, 68, 68, 0.1)' : 'var(--bg-glass)',
-    color: danger ? 'var(--danger-color)' : 'var(--text-secondary)',
-    cursor: 'pointer',
-    transition: 'all 200ms ease',
-    padding: 0,
-    ...style,
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
+      onClick={handleClick}
+      onPointerDown={handlePointerDown}
+      disabled={disabled || loading}
+      aria-disabled={disabled || loading}
+      aria-label={ariaLabel || (effectiveVariant === 'icon' ? title : undefined)}
       title={title}
-      aria-label={ariaLabel || title}
-      className="icon-button"
-      style={baseStyle}
+      className={classNames}
+      style={style}
       {...props}
     >
-      {Icon && <Icon size={size === 'sm' ? 14 : 18} />}
+      {loading ? (
+        <span className="btn-spinner" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="10" />
+          </svg>
+        </span>
+      ) : (
+        <>
+          {Icon && iconPosition === 'left' && (
+            <Icon size={size === 'sm' ? 14 : size === 'lg' ? 20 : 16} className="btn-icon-svg" />
+          )}
+          {children && <span>{children}</span>}
+          {Icon && iconPosition === 'right' && (
+            <Icon size={size === 'sm' ? 14 : size === 'lg' ? 20 : 16} className="btn-icon-svg" />
+          )}
+        </>
+      )}
+
+      {ripples.map((r) => (
+        <span
+          key={r.id}
+          className="btn-ripple"
+          style={{
+            top: r.y - r.size / 2,
+            left: r.x - r.size / 2,
+            width: r.size,
+            height: r.size,
+          }}
+        />
+      ))}
     </button>
   );
 }
+
+export function PrimaryButton(props) {
+  return <Button variant="primary" {...props} />;
+}
+
+export function SecondaryButton(props) {
+  return <Button variant="secondary" {...props} />;
+}
+
+export function DangerButton(props) {
+  return <Button variant="danger" {...props} />;
+}
+
+export function SuccessButton(props) {
+  return <Button variant="success" {...props} />;
+}
+
+export function OutlineButton(props) {
+  return <Button variant="outline" {...props} />;
+}
+
+export function GhostButton(props) {
+  return <Button variant="ghost" {...props} />;
+}
+
+export function IconButton({ icon, title, ariaLabel, danger, ...props }) {
+  return <Button variant={danger ? 'danger' : 'icon'} icon={icon} ariaLabel={ariaLabel || title} title={title} {...props} />;
+}
+
+export function LoadingButton(props) {
+  return <Button loading={true} {...props} />;
+}
+
+export default Button;
+

@@ -80,18 +80,29 @@ export default function PremiumSelect({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  // Keyboard ESC listener
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+
+  // Keyboard navigation listener (Escape, ArrowUp, ArrowDown, Enter)
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         setIsOpen(false);
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setHighlightedIndex((prev) => (prev < options.length - 1 ? prev + 1 : 0));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : options.length - 1));
+      } else if (e.key === 'Enter' && highlightedIndex >= 0 && highlightedIndex < options.length) {
+        e.preventDefault();
+        handleSelect(options[highlightedIndex].value);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, highlightedIndex, options]);
 
   const handleSelect = (val) => {
     if (onChange) {

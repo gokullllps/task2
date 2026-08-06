@@ -9,7 +9,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
-  const [theme, setTheme] = useLocalStorage('todoapp_theme', 'light');
+  const [theme, setTheme] = useLocalStorage('todoapp_theme', 'dark');
 
   // Check for an existing login session on first load
   useEffect(() => {

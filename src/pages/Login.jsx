@@ -9,10 +9,15 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="login-page">
-      <div className="login-card">
+      {/* Background Mesh Gradient Orbs */}
+      <div className="login-bg-orb orb-1" />
+      <div className="login-bg-orb orb-2" />
+      <div className="login-bg-orb orb-3" />
+
+      <div className="login-card glass-panel">
         <div className="login-header">
           <div className="login-logo-badge">
-            <TaskIcon size={26} />
+            <TaskIcon size={28} />
           </div>
           <h1 className="login-title">
             {activeTab === 'login' ? 'Welcome Back' : 'Create Account'}
@@ -24,12 +29,19 @@ export default function Login({ onLogin }) {
           </p>
         </div>
 
-        <div className="auth-tabs" role="tablist">
+        {/* Animated Segmented Control (Inspired by Reference Image 4) */}
+        <div className="segmented-control" role="tablist" aria-label="Authentication Options">
+          <div
+            className="segmented-indicator"
+            style={{
+              left: activeTab === 'login' ? '4px' : 'calc(50%)',
+            }}
+          />
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'login'}
-            className={`auth-tab ${activeTab === 'login' ? 'active' : ''}`}
+            className={`segmented-tab ${activeTab === 'login' ? 'active' : ''}`}
             onClick={() => setActiveTab('login')}
           >
             Sign In
@@ -38,18 +50,20 @@ export default function Login({ onLogin }) {
             type="button"
             role="tab"
             aria-selected={activeTab === 'register'}
-            className={`auth-tab ${activeTab === 'register' ? 'active' : ''}`}
+            className={`segmented-tab ${activeTab === 'register' ? 'active' : ''}`}
             onClick={() => setActiveTab('register')}
           >
             Register
           </button>
         </div>
 
-        {activeTab === 'login' ? (
-          <LoginForm onLogin={onLogin} />
-        ) : (
-          <RegisterForm onRegisterSuccess={onLogin} />
-        )}
+        <div className="auth-form-container">
+          {activeTab === 'login' ? (
+            <LoginForm onLogin={onLogin} />
+          ) : (
+            <RegisterForm onRegisterSuccess={onLogin} />
+          )}
+        </div>
 
         <div className="login-footer">
           <div className="security-notice">

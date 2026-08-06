@@ -311,37 +311,24 @@ export default function AccountSwitcher({ currentUser, onSwitchUser, onLogout, o
       {showAddAccountModal &&
         createPortal(
           <div
+            className="modal-overlay"
             onClick={(e) => {
               if (e.target === e.currentTarget) setShowAddAccountModal(false);
             }}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '24px',
-              background: 'rgba(0, 0, 0, 0.65)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              overflow: 'auto',
-              zIndex: 99999,
-              animation: 'fadeIn 250ms ease-out',
-            }}
           >
-            <GlassCard
-              hoverEffect={false}
-              style={{
-                maxWidth: '520px',
-                width: 'min(520px, 92vw)',
-                maxHeight: '90vh',
-                overflowY: 'auto',
-                borderRadius: '24px',
-                boxShadow: 'var(--shadow-strong)',
-                border: '1px solid var(--border-color)',
-                margin: 'auto',
-              }}
-            >
+            <div className="modal-content-wrapper">
+              <GlassCard
+                hoverEffect={false}
+                style={{
+                  width: '100%',
+                  maxHeight: '90vh',
+                  overflowY: 'auto',
+                  borderRadius: '24px',
+                  boxShadow: 'var(--shadow-strong)',
+                  border: '1px solid var(--border-color)',
+                  margin: 'auto',
+                }}
+              >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>
                   {modalTab === 'login' ? 'Add Existing Account' : 'Create New Account'}
@@ -451,6 +438,7 @@ export default function AccountSwitcher({ currentUser, onSwitchUser, onLogout, o
                 </form>
               )}
             </GlassCard>
+            </div>
           </div>,
           document.body
         )}
@@ -459,37 +447,24 @@ export default function AccountSwitcher({ currentUser, onSwitchUser, onLogout, o
       {showManageModal &&
         createPortal(
           <div
+            className="modal-overlay"
             onClick={(e) => {
               if (e.target === e.currentTarget) setShowManageModal(false);
             }}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '24px',
-              background: 'rgba(0, 0, 0, 0.65)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              overflow: 'auto',
-              zIndex: 99999,
-              animation: 'fadeIn 250ms ease-out',
-            }}
           >
-            <GlassCard
-              hoverEffect={false}
-              style={{
-                maxWidth: '520px',
-                width: 'min(520px, 92vw)',
-                maxHeight: '90vh',
-                overflowY: 'auto',
-                borderRadius: '24px',
-                boxShadow: 'var(--shadow-strong)',
-                border: '1px solid var(--border-color)',
-                margin: 'auto',
-              }}
-            >
+            <div className="modal-content-wrapper">
+              <GlassCard
+                hoverEffect={false}
+                style={{
+                  width: '100%',
+                  maxHeight: '90vh',
+                  overflowY: 'auto',
+                  borderRadius: '24px',
+                  boxShadow: 'var(--shadow-strong)',
+                  border: '1px solid var(--border-color)',
+                  margin: 'auto',
+                }}
+              >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Manage Accounts</h3>
                 <IconButton icon={CloseIcon} onClick={() => setShowManageModal(false)} title="Close (ESC)" />
@@ -545,6 +520,7 @@ export default function AccountSwitcher({ currentUser, onSwitchUser, onLogout, o
                 <SecondaryButton onClick={() => setShowManageModal(false)}>Done</SecondaryButton>
               </div>
             </GlassCard>
+            </div>
           </div>,
           document.body
         )}

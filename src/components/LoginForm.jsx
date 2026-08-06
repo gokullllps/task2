@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { validateLogin } from '../utils/validation';
 import { validateCredentials, createSession } from '../utils/auth';
 import { UserIcon, LockIcon } from './Icons';
+import { TextInput } from './ui/Input';
+import { Button } from './ui/Button';
 
 export default function LoginForm({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -41,55 +43,44 @@ export default function LoginForm({ onLogin }) {
 
   return (
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
-      <div className="form-group">
-        <label htmlFor="username">
-          <span>Username</span>
-        </label>
-        <div className="input-with-icon">
-          <input
-            id="username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter username"
-            autoComplete="username"
-            className={errors.username ? 'input-error' : ''}
-            disabled={isSubmitting}
-          />
-          <UserIcon size={18} className="field-icon" />
-        </div>
-        {errors.username && <span className="error-text">{errors.username}</span>}
-      </div>
+      <TextInput
+        id="username"
+        label="Username"
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Enter username"
+        autoComplete="username"
+        icon={UserIcon}
+        error={errors.username}
+        disabled={isSubmitting}
+      />
 
-      <div className="form-group">
-        <label htmlFor="password">
-          <span>Password</span>
-        </label>
-        <div className="input-with-icon">
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter password"
-            autoComplete="current-password"
-            className={errors.password ? 'input-error' : ''}
-            disabled={isSubmitting}
-          />
-          <LockIcon size={18} className="field-icon" />
-        </div>
-        {errors.password && <span className="error-text">{errors.password}</span>}
-      </div>
+      <TextInput
+        id="password"
+        label="Password"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Enter password"
+        autoComplete="current-password"
+        icon={LockIcon}
+        showPasswordToggle={true}
+        error={errors.password}
+        disabled={isSubmitting}
+      />
 
       {authError && <div className="auth-error">{authError}</div>}
 
-      <button
+      <Button
         type="submit"
-        className="btn btn-primary btn-block"
-        disabled={isSubmitting}
+        variant="primary"
+        size="lg"
+        block={true}
+        loading={isSubmitting}
       >
-        {isSubmitting ? 'Signing in...' : 'Sign In'}
-      </button>
+        Sign In
+      </Button>
     </form>
   );
 }

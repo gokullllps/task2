@@ -55,8 +55,11 @@ export default function Sidebar({
                     onClose && onClose();
                   }}
                 >
-                  <IconComponent size={18} />
-                  <span>{item.label}</span>
+                  <div className="nav-icon-wrapper">
+                    {isActive && <div className="nav-active-ring" />}
+                    <IconComponent size={18} />
+                  </div>
+                  <span className="nav-label">{item.label}</span>
                   {item.badge !== undefined && <span className="nav-badge">{item.badge}</span>}
                 </button>
               );

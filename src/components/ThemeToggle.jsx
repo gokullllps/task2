@@ -2,54 +2,50 @@ import React, { useState } from 'react';
 import { SunIcon, MoonIcon } from './Icons';
 
 export default function ThemeToggle({ theme, setTheme }) {
-  const [isRotating, setIsRotating] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+  const isDark = theme === 'dark';
 
   function toggleTheme() {
-    setIsRotating(true);
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
-    setTimeout(() => setIsRotating(false), 400);
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   }
 
-  const isLight = theme === 'light';
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleTheme();
+    }
+  }
 
   return (
     <button
-      className={`theme-toggle-btn ${isRotating ? 'rotating' : ''}`}
+      type="button"
+      role="switch"
+      aria-checked={isDark}
+      className="theme-pill-toggle"
       onClick={toggleTheme}
-      aria-label={`Switch to ${isLight ? 'dark' : 'light'} theme`}
-      title={`Switch to ${isLight ? 'dark' : 'light'} theme`}
-      style={{
-        position: 'relative',
-        width: '42px',
-        height: '42px',
-        borderRadius: '50%',
-        background: 'var(--bg-card)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        border: '1px solid var(--border-color)',
-        color: 'var(--accent-color)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: 'var(--shadow-glass)',
-        transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease',
-        cursor: 'pointer',
-        overflow: 'hidden',
-      }}
+      onKeyDown={handleKeyDown}
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onMouseLeave={() => setIsPressed(false)}
+      aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
+      title={`Switch to ${isDark ? 'light' : 'dark'} theme`}
     >
-      <div
-        className="theme-icon-rotator"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transform: isLight ? 'rotate(0deg) scale(1)' : 'rotate(180deg) scale(1)',
-          transition: 'transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        }}
-      >
-        {isLight ? <MoonIcon size={20} /> : <SunIcon size={20} />}
+      <div className={`theme-pill-track ${isDark ? 'dark-mode' : 'light-mode'} ${isPressed ? 'pressed' : ''}`}>
+        <div className="theme-pill-thumb">
+          <div className="theme-thumb-ring" />
+          <div className="theme-thumb-icon">
+            {isDark ? <MoonIcon size={16} /> : <SunIcon size={16} />}
+          </div>
+        </div>
+        <div className="theme-pill-labels">
+          <span className={`theme-label-icon dark ${isDark ? 'active' : ''}`}>
+            <MoonIcon size={14} />
+          </span>
+          <span className={`theme-label-icon light ${!isDark ? 'active' : ''}`}>
+            <SunIcon size={14} />
+          </span>
+        </div>
       </div>
-      <span className="theme-glow-ripple" />
     </button>
   );
 }

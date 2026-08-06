@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { validateRegister } from '../utils/validation';
 import { registerUser, createSession } from '../utils/auth';
 import { UserIcon, MailIcon, LockIcon } from './Icons';
+import { TextInput } from './ui/Input';
+import { Button } from './ui/Button';
 
 export default function RegisterForm({ onRegisterSuccess }) {
   const [username, setUsername] = useState('');
@@ -48,98 +50,73 @@ export default function RegisterForm({ onRegisterSuccess }) {
 
   return (
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
-      <div className="form-group">
-        <label htmlFor="reg-username">
-          <span>Username</span>
-        </label>
-        <div className="input-with-icon">
-          <input
-            id="reg-username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Choose a username"
-            autoComplete="username"
-            className={errors.username ? 'input-error' : ''}
-            disabled={isSubmitting}
-          />
-          <UserIcon size={18} className="field-icon" />
-        </div>
-        {errors.username && <span className="error-text">{errors.username}</span>}
-      </div>
+      <TextInput
+        id="reg-username"
+        label="Username"
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Choose a username"
+        autoComplete="username"
+        icon={UserIcon}
+        error={errors.username}
+        disabled={isSubmitting}
+      />
 
-      <div className="form-group">
-        <label htmlFor="reg-email">
-          <span>Email Address</span>
-        </label>
-        <div className="input-with-icon">
-          <input
-            id="reg-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="name@example.com"
-            autoComplete="email"
-            className={errors.email ? 'input-error' : ''}
-            disabled={isSubmitting}
-          />
-          <MailIcon size={18} className="field-icon" />
-        </div>
-        {errors.email && <span className="error-text">{errors.email}</span>}
-      </div>
+      <TextInput
+        id="reg-email"
+        label="Email Address"
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="name@example.com"
+        autoComplete="email"
+        icon={MailIcon}
+        error={errors.email}
+        disabled={isSubmitting}
+      />
 
-      <div className="form-group">
-        <label htmlFor="reg-password">
-          <span>Password</span>
-        </label>
-        <div className="input-with-icon">
-          <input
-            id="reg-password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="At least 6 characters"
-            autoComplete="new-password"
-            className={errors.password ? 'input-error' : ''}
-            disabled={isSubmitting}
-          />
-          <LockIcon size={18} className="field-icon" />
-        </div>
-        {errors.password && <span className="error-text">{errors.password}</span>}
-      </div>
+      <TextInput
+        id="reg-password"
+        label="Password"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="At least 6 characters"
+        autoComplete="new-password"
+        icon={LockIcon}
+        showPasswordToggle={true}
+        error={errors.password}
+        disabled={isSubmitting}
+      />
 
-      <div className="form-group">
-        <label htmlFor="reg-confirm-password">
-          <span>Confirm Password</span>
-        </label>
-        <div className="input-with-icon">
-          <input
-            id="reg-confirm-password"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Re-enter password"
-            autoComplete="new-password"
-            className={errors.confirmPassword ? 'input-error' : ''}
-            disabled={isSubmitting}
-          />
-          <LockIcon size={18} className="field-icon" />
-        </div>
-        {errors.confirmPassword && (
-          <span className="error-text">{errors.confirmPassword}</span>
-        )}
-      </div>
+      <TextInput
+        id="reg-confirm-password"
+        label="Confirm Password"
+        type="password"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        placeholder="Re-enter password"
+        autoComplete="new-password"
+        icon={LockIcon}
+        showPasswordToggle={true}
+        error={errors.confirmPassword}
+        disabled={isSubmitting}
+      />
 
       {authError && <div className="auth-error">{authError}</div>}
       {successMessage && <div className="auth-success">{successMessage}</div>}
 
-      <button
+      <Button
         type="submit"
-        className="btn btn-primary btn-block"
-        disabled={isSubmitting}
+        variant="primary"
+        size="lg"
+        block={true}
+        loading={isSubmitting}
       >
-        {isSubmitting ? 'Creating Account...' : 'Create Account'}
-      </button>
+        Create Account
+      </Button>
     </form>
   );
 }
+

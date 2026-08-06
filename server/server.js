@@ -25,6 +25,9 @@ connectDB();
 
 const app = express();
 
+// Enable Express proxy trust setting for reverse proxies (Render, Heroku, Nginx)
+app.set('trust proxy', 1);
+
 // Security & Production Middlewares
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(compression());

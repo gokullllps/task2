@@ -39,10 +39,18 @@ export default function TodoForm({ onAddTodo, familyMembers = [] }) {
     }
 
     const selectedMember = familyMembers.find((m) => m.name === assignedToName);
+    const assignedUserId = selectedMember
+      ? (typeof selectedMember.user === 'object' ? selectedMember.user._id : selectedMember.user) || null
+      : null;
+    const assignedUsername = selectedMember ? selectedMember.name : assignedToName;
+
     onAddTodo(title.trim(), description.trim(), {
       priority,
       assignedToName,
+      assignedTo: assignedToName,
       assignedToMember: selectedMember ? selectedMember._id || selectedMember.id : null,
+      assignedUserId,
+      assignedUsername,
     });
 
     setTitle('');

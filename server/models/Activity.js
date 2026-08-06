@@ -10,7 +10,20 @@ const activitySchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['LOGIN', 'LOGOUT', 'TODO_CREATED', 'TODO_UPDATED', 'TODO_DELETED', 'TODO_COMPLETED'],
+      enum: [
+        'LOGIN',
+        'LOGOUT',
+        'TODO_CREATED',
+        'TODO_UPDATED',
+        'TODO_DELETED',
+        'TODO_COMPLETED',
+        'FAMILY_CREATED',
+        'MEMBER_ADDED',
+        'FAMILY_NICKNAME_UPDATED',
+        'FAMILY_MEMBER_ADDED',
+        'FAMILY_MEMBER_UPDATED',
+        'FAMILY_MEMBER_DELETED',
+      ],
       required: true,
     },
     details: {

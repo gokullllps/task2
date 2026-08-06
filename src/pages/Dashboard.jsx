@@ -120,6 +120,10 @@ export default function Dashboard({ onLogout, theme, setTheme, user }) {
 
   useEffect(() => {
     fetchData();
+    const interval = setInterval(() => {
+      fetchData();
+    }, 4000);
+    return () => clearInterval(interval);
   }, [fetchData]);
 
   // Handle Account Switching in-memory without page refresh

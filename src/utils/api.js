@@ -40,7 +40,17 @@ async function request(endpoint, options = {}) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      const errorMsg = data.message || `Request failed with status ${response.status}`;
+      const errorMsg =
+        data.message ||
+        data.error ||
+        (data.errors
+          ? Array.isArray(data.errors)
+            ? data.errors.join(', ')
+            : Object.values(data.errors)
+                .map((e) => e.message || e)
+                .join(', ')
+          : null) ||
+        `Request failed with status ${response.status}`;
       const error = new Error(errorMsg);
       error.status = response.status;
       error.data = data;

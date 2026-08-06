@@ -52,12 +52,6 @@ export default function Login({ onLogin }) {
         )}
 
         <div className="login-footer">
-          {activeTab === 'login' && (
-            <p className="login-hint">
-              Demo Credentials: <strong>goku</strong> / <strong>goku123</strong>
-            </p>
-          )}
-
           <div className="security-notice">
             <LockIcon size={14} />
             <span>JWT Auth & bcrypt Password Hashing Protected</span>

@@ -1,6 +1,9 @@
 import express from 'express';
 import Todo from '../models/Todo.js';
 import Activity from '../models/Activity.js';
+import FamilyMember from '../models/FamilyMember.js';
+import Notification from '../models/Notification.js';
+import User from '../models/User.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -8,38 +11,62 @@ const router = express.Router();
 // Apply auth middleware to all todo routes
 router.use(protect);
 
+const formatTodo = (t) => ({
+  id: t._id.toString(),
+  _id: t._id.toString(),
+  user: t.user ? t.user.toString() : null,
+  title: t.title,
+  description: t.description,
+  completed: t.completed,
+  priority: t.priority,
+  category: t.category,
+  dueDate: t.dueDate,
+  assignedToMember: t.assignedToMember ? t.assignedToMember.toString() : null,
+  assignedToName: t.assignedToName || t.assignedTo || '',
+  assignedTo: t.assignedTo || t.assignedToName || '',
+  assignedUserId: t.assignedUserId ? t.assignedUserId.toString() : null,
+  assignedUsername: t.assignedUsername || '',
+  createdAt: t.createdAt,
+  updatedAt: t.updatedAt,
+});
+
 // @route   GET /api/todos
-// @desc    Get all todos for logged-in user
+// @desc    Get all todos for logged-in user (created by or assigned to user)
 // @access  Private
 router.get('/', async (req, res) => {
   try {
     const { search } = req.query;
-    let query = { user: req.user._id };
+
+    const userOrAssignCriteria = [
+      { user: req.user._id },
+      { assignedUserId: req.user._id },
+      { assignedUsername: req.user.username },
+      { assignedToName: req.user.username },
+      { assignedTo: req.user.username },
+    ];
+
+    let query = { $or: userOrAssignCriteria };
 
     if (search) {
       const searchRegex = new RegExp(search, 'i');
-      query.$or = [
-        { title: searchRegex },
-        { description: searchRegex },
-        { category: searchRegex },
-      ];
+      query = {
+        $and: [
+          { $or: userOrAssignCriteria },
+          {
+            $or: [
+              { title: searchRegex },
+              { description: searchRegex },
+              { category: searchRegex },
+              { assignedToName: searchRegex },
+              { assignedUsername: searchRegex },
+            ],
+          },
+        ],
+      };
     }
 
     const todos = await Todo.find(query).sort({ createdAt: -1 });
-
-    // Format output with virtual 'id' for frontend compatibility
-    const formattedTodos = todos.map((t) => ({
-      id: t._id.toString(),
-      _id: t._id.toString(),
-      title: t.title,
-      description: t.description,
-      completed: t.completed,
-      priority: t.priority,
-      category: t.category,
-      dueDate: t.dueDate,
-      createdAt: t.createdAt,
-      updatedAt: t.updatedAt,
-    }));
+    const formattedTodos = todos.map(formatTodo);
 
     return res.json({ success: true, count: formattedTodos.length, todos: formattedTodos });
   } catch (error) {
@@ -53,10 +80,48 @@ router.get('/', async (req, res) => {
 // @access  Private
 router.post('/', async (req, res) => {
   try {
-    const { title, description, priority, category, dueDate } = req.body;
+    const {
+      title,
+      description,
+      priority,
+      category,
+      dueDate,
+      assignedToName,
+      assignedToMember,
+      assignedTo,
+      assignedUserId,
+      assignedUsername,
+    } = req.body;
 
     if (!title || !title.trim()) {
       return res.status(400).json({ success: false, message: 'Title is required' });
+    }
+
+    let finalAssignedToMember = assignedToMember || null;
+    let finalAssignedToName = assignedToName || assignedTo || '';
+    let finalAssignedUserId = assignedUserId || null;
+    let finalAssignedUsername = assignedUsername || finalAssignedToName || '';
+
+    // Look up FamilyMember & User if assignedToName is provided
+    if (finalAssignedToName && finalAssignedToName !== 'Unassigned') {
+      const member = await FamilyMember.findOne({
+        name: new RegExp(`^${finalAssignedToName.trim()}$`, 'i'),
+      });
+      if (member) {
+        finalAssignedToMember = member._id;
+        finalAssignedUserId = member.user;
+        finalAssignedUsername = member.name;
+        finalAssignedToName = member.name;
+      } else {
+        const targetUser = await User.findOne({
+          username: new RegExp(`^${finalAssignedToName.trim()}$`, 'i'),
+        });
+        if (targetUser) {
+          finalAssignedUserId = targetUser._id;
+          finalAssignedUsername = targetUser.username;
+          finalAssignedToName = targetUser.username;
+        }
+      }
     }
 
     const todo = await Todo.create({
@@ -66,29 +131,31 @@ router.post('/', async (req, res) => {
       priority: priority || 'medium',
       category: category || 'General',
       dueDate: dueDate || null,
+      assignedToMember: finalAssignedToMember,
+      assignedToName: finalAssignedToName,
+      assignedTo: finalAssignedToName,
+      assignedUserId: finalAssignedUserId,
+      assignedUsername: finalAssignedUsername,
     });
 
-    // Track activity
+    // Activity tracking
     await Activity.create({
       user: req.user._id,
       type: 'TODO_CREATED',
-      details: `Created task: "${todo.title}"`,
-    });
+      details: `Created task: "${todo.title}"${finalAssignedToName && finalAssignedToName !== 'Unassigned' ? ` (Assigned to ${finalAssignedToName})` : ''}`,
+    }).catch(() => {});
 
-    const formatted = {
-      id: todo._id.toString(),
-      _id: todo._id.toString(),
-      title: todo.title,
-      description: todo.description,
-      completed: todo.completed,
-      priority: todo.priority,
-      category: todo.category,
-      dueDate: todo.dueDate,
-      createdAt: todo.createdAt,
-      updatedAt: todo.updatedAt,
-    };
+    // Notification if assigned to another user
+    if (finalAssignedUserId && finalAssignedUserId.toString() !== req.user._id.toString()) {
+      await Notification.create({
+        recipient: finalAssignedUserId,
+        sender: req.user._id,
+        type: 'TASK_ASSIGNED',
+        message: `Task "${todo.title}" was assigned to you by ${req.user.username}.`,
+      }).catch(() => {});
+    }
 
-    return res.status(201).json({ success: true, todo: formatted });
+    return res.status(201).json({ success: true, todo: formatTodo(todo) });
   } catch (error) {
     console.error('[Create Todo Error]', error);
     return res.status(500).json({ success: false, message: error.message });
@@ -96,11 +163,20 @@ router.post('/', async (req, res) => {
 });
 
 // @route   PUT /api/todos/:id
-// @desc    Update a todo
+// @desc    Update a todo (creator or assigned user)
 // @access  Private
 router.put('/:id', async (req, res) => {
   try {
-    const todo = await Todo.findOne({ _id: req.params.id, user: req.user._id });
+    const todo = await Todo.findOne({
+      _id: req.params.id,
+      $or: [
+        { user: req.user._id },
+        { assignedUserId: req.user._id },
+        { assignedUsername: req.user.username },
+        { assignedToName: req.user.username },
+        { assignedTo: req.user.username },
+      ],
+    });
 
     if (!todo) {
       return res.status(404).json({ success: false, message: 'Todo not found' });
@@ -114,40 +190,43 @@ router.put('/:id', async (req, res) => {
     if (req.body.priority !== undefined) todo.priority = req.body.priority;
     if (req.body.category !== undefined) todo.category = req.body.category;
     if (req.body.dueDate !== undefined) todo.dueDate = req.body.dueDate;
+    if (req.body.assignedToName !== undefined) todo.assignedToName = req.body.assignedToName;
+    if (req.body.assignedTo !== undefined) todo.assignedTo = req.body.assignedTo;
+    if (req.body.assignedUserId !== undefined) todo.assignedUserId = req.body.assignedUserId;
+    if (req.body.assignedUsername !== undefined) todo.assignedUsername = req.body.assignedUsername;
+    if (req.body.assignedToMember !== undefined) todo.assignedToMember = req.body.assignedToMember;
 
     const updatedTodo = await todo.save();
 
-    // Track Activity based on completion status or update
+    // Track Activity & Send Notification
     if (req.body.completed !== undefined && req.body.completed !== wasCompleted) {
       const activityType = req.body.completed ? 'TODO_COMPLETED' : 'TODO_UPDATED';
       const actionText = req.body.completed ? 'Completed' : 'Marked pending';
+
       await Activity.create({
         user: req.user._id,
         type: activityType,
         details: `${actionText} task: "${updatedTodo.title}"`,
-      });
+      }).catch(() => {});
+
+      // Notify creator if completed by assigned member
+      if (updatedTodo.user.toString() !== req.user._id.toString()) {
+        await Notification.create({
+          recipient: updatedTodo.user,
+          sender: req.user._id,
+          type: 'TASK_COMPLETED',
+          message: `Task "${updatedTodo.title}" was ${req.body.completed ? 'completed' : 'updated'} by ${req.user.username}.`,
+        }).catch(() => {});
+      }
     } else {
       await Activity.create({
         user: req.user._id,
         type: 'TODO_UPDATED',
         details: `Updated task: "${updatedTodo.title}"`,
-      });
+      }).catch(() => {});
     }
 
-    const formatted = {
-      id: updatedTodo._id.toString(),
-      _id: updatedTodo._id.toString(),
-      title: updatedTodo.title,
-      description: updatedTodo.description,
-      completed: updatedTodo.completed,
-      priority: updatedTodo.priority,
-      category: updatedTodo.category,
-      dueDate: updatedTodo.dueDate,
-      createdAt: updatedTodo.createdAt,
-      updatedAt: updatedTodo.updatedAt,
-    };
-
-    return res.json({ success: true, todo: formatted });
+    return res.json({ success: true, todo: formatTodo(updatedTodo) });
   } catch (error) {
     console.error('[Update Todo Error]', error);
     return res.status(500).json({ success: false, message: error.message });
@@ -155,11 +234,19 @@ router.put('/:id', async (req, res) => {
 });
 
 // @route   DELETE /api/todos/:id
-// @desc    Delete a todo
+// @desc    Delete a todo (creator or assigned user)
 // @access  Private
 router.delete('/:id', async (req, res) => {
   try {
-    const todo = await Todo.findOne({ _id: req.params.id, user: req.user._id });
+    const todo = await Todo.findOne({
+      _id: req.params.id,
+      $or: [
+        { user: req.user._id },
+        { assignedUserId: req.user._id },
+        { assignedUsername: req.user.username },
+        { assignedToName: req.user.username },
+      ],
+    });
 
     if (!todo) {
       return res.status(404).json({ success: false, message: 'Todo not found' });
@@ -168,12 +255,11 @@ router.delete('/:id', async (req, res) => {
     const todoTitle = todo.title;
     await todo.deleteOne();
 
-    // Track activity
     await Activity.create({
       user: req.user._id,
       type: 'TODO_DELETED',
       details: `Deleted task: "${todoTitle}"`,
-    });
+    }).catch(() => {});
 
     return res.json({ success: true, message: 'Todo deleted successfully', id: req.params.id });
   } catch (error) {

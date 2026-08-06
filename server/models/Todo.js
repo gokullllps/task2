@@ -46,6 +46,22 @@ const todoSchema = new mongoose.Schema(
       default: '',
       trim: true,
     },
+    assignedTo: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    assignedUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+      index: true,
+    },
+    assignedUsername: {
+      type: String,
+      default: '',
+      trim: true,
+    },
   },
   { timestamps: true }
 );

@@ -19,7 +19,9 @@ const connectDB = async () => {
     console.log(`[Database] MongoDB Connected: ${conn.connection.host}`);
     return conn;
   } catch (primaryError) {
-    console.warn(`[Database Warning] Primary MongoDB connection failed: ${primaryError.message}`);
+    console.error("Primary MongoDB connection failed:");
+    console.error(primaryError);
+    console.error(primaryError.stack);
     console.log('[Database] Initializing resilient In-Memory MongoDB Server fallback...');
 
     try {

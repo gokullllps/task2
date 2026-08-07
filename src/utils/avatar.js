@@ -1,34 +1,23 @@
-const AVATAR_PREFIX = 'aether_avatar_';
-
 /**
- * Saves base64 avatar image for specific user
+ * Saves base64 avatar image for specific user (noop - stored in MongoDB)
  */
 export function saveUserAvatar(username, base64Image) {
-  if (!username) return;
-  const key = `${AVATAR_PREFIX}${username.toLowerCase().trim()}`;
-  try {
-    localStorage.setItem(key, base64Image);
-  } catch (err) {
-    console.error('Error saving avatar to localStorage:', err);
-  }
+  // Avatar images are persisted directly in MongoDB Database via API
+  return;
 }
 
 /**
- * Retrieves stored avatar image for specific user
+ * Retrieves stored avatar image for specific user (noop - loaded from MongoDB user state)
  */
 export function getUserAvatar(username) {
-  if (!username) return null;
-  const key = `${AVATAR_PREFIX}${username.toLowerCase().trim()}`;
-  return localStorage.getItem(key) || null;
+  return null;
 }
 
 /**
- * Removes stored avatar image for specific user
+ * Removes stored avatar image for specific user (noop - managed in MongoDB)
  */
 export function removeUserAvatar(username) {
-  if (!username) return;
-  const key = `${AVATAR_PREFIX}${username.toLowerCase().trim()}`;
-  localStorage.removeItem(key);
+  return;
 }
 
 /**

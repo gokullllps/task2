@@ -1,13 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ThemeToggle from './ThemeToggle';
 import AccountSwitcher from './AccountSwitcher';
-import { SidebarIcon, BellIcon, CheckIcon } from './Icons';
+import { SidebarIcon, BellIcon, CheckIcon, AwardIcon, FlameIcon, ClockIcon } from './Icons';
+
+function calculateDynamicStreak(todos = []) {
+  const completedTodos = todos.filter((t) => t.completed);
+  if (completedTodos.length === 0) return 0;
+
+  const dateSet = new Set();
+  completedTodos.forEach((t) => {
+    const rawDate = t.updatedAt || t.createdAt;
+    if (rawDate) {
+      try {
+        const formatted = new Date(rawDate).toISOString().split('T')[0];
+        dateSet.add(formatted);
+      } catch (err) {
+        // ignore invalid dates
+      }
+    }
+  });
+
+  if (dateSet.size === 0) return 0;
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+  if (!dateSet.has(todayStr) && !dateSet.has(yesterdayStr)) {
+    return 0;
+  }
+
+  let streak = 0;
+  let curr = new Date();
+
+  if (!dateSet.has(todayStr)) {
+    curr.setDate(curr.getDate() - 1);
+  }
+
+  while (true) {
+    const dStr = curr.toISOString().split('T')[0];
+    if (dateSet.has(dStr)) {
+      streak++;
+      curr.setDate(curr.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
 
 export default function Navbar({
   onLogout,
   theme,
   setTheme,
   user,
+  todos = [],
   currentView,
   onOpenMobileMenu,
   onSwitchUser,
@@ -18,6 +67,14 @@ export default function Navbar({
   onMarkAllNotificationsRead,
 }) {
   const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedTime = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'short',
@@ -25,6 +82,11 @@ export default function Navbar({
     day: 'numeric',
     year: 'numeric',
   });
+
+  const completedCount = (todos || []).filter((t) => t.completed).length;
+  const totalCount = (todos || []).length;
+  const scorePercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const streakDays = calculateDynamicStreak(todos);
 
   const pageTitles = {
     home: 'Home Overview',
@@ -53,105 +115,29 @@ export default function Navbar({
         </div>
 
         <div className="navbar-actions">
-          {/* Notifications Bell Dropdown */}
-          <div style={{ position: 'relative' }}>
-            <button
-              className="btn btn-icon"
-              onClick={() => setShowNotificationsDropdown(!showNotificationsDropdown)}
-              title="Notifications"
-              aria-label="Notifications"
-              style={{ position: 'relative' }}
-            >
-              <BellIcon size={18} />
-              {unreadCount > 0 && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '-2px',
-                    right: '-2px',
-                    background: 'var(--danger-color)',
-                    color: '#ffffff',
-                    fontSize: '0.7rem',
-                    fontWeight: 800,
-                    width: '18px',
-                    height: '18px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '2px solid var(--bg-card)',
-                  }}
-                >
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-
-            {/* Notifications Menu */}
-            {showNotificationsDropdown && (
-              <div
-                className="glass-panel"
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  right: 0,
-                  width: '320px',
-                  padding: '16px',
-                  zIndex: 100,
-                  boxShadow: 'var(--shadow-strong)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid var(--border-color)' }}>
-                  <span style={{ fontSize: '0.94rem', fontWeight: 800 }}>Workspace Alerts</span>
-                  {unreadCount > 0 && (
-                    <button
-                      onClick={onMarkAllNotificationsRead}
-                      style={{ fontSize: '0.76rem', color: 'var(--accent-color)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}
-                    >
-                      Mark all read
-                    </button>
-                  )}
-                </div>
-
-                {notifications.length === 0 ? (
-                  <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)', textAlign: 'center', padding: '16px 0' }}>
-                    No notifications right now.
-                  </p>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', overflowY: 'auto' }}>
-                    {notifications.map((n) => (
-                      <div
-                        key={n._id}
-                        onClick={() => onMarkNotificationRead(n._id)}
-                        style={{
-                          padding: '10px',
-                          borderRadius: 'var(--radius-sm)',
-                          background: n.read ? 'transparent' : 'var(--accent-soft)',
-                          border: '1px solid var(--border-color)',
-                          fontSize: '0.82rem',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <span style={{ display: 'block', color: 'var(--text-primary)', fontWeight: n.read ? 400 : 700 }}>
-                          {n.message}
-                        </span>
-                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>
-                          {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+          {/* Live Digital Clock Chip */}
+          <div className="navbar-clock-chip">
+            <ClockIcon size={14} />
+            <span>{formattedTime}</span>
           </div>
 
-          <AccountSwitcher
-            currentUser={user}
-            onSwitchUser={onSwitchUser}
-            onLogout={onLogout}
-            onAddAccount={onAddAccount}
-          />
+          {/* Dynamic Productivity Achievement Badges */}
+          <div className="navbar-achievements-group">
+            <div className="navbar-achievement-badge gold" title={`Task Master: ${completedCount} completed tasks`}>
+              <AwardIcon size={15} />
+              <span className="badge-value">{completedCount}</span>
+            </div>
+
+            <div className="navbar-achievement-badge flame" title={`Focus Streak: ${streakDays} day streak`}>
+              <FlameIcon size={15} />
+              <span className="badge-value">{streakDays}d</span>
+            </div>
+
+            <div className="navbar-achievement-badge green" title={`Efficiency Rating: ${scorePercent}% completed`}>
+              <CheckIcon size={15} />
+              <span className="badge-value">{scorePercent}%</span>
+            </div>
+          </div>
 
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>

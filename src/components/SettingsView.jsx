@@ -1,16 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GlassCard from './ui/GlassCard';
 import { PrimaryButton } from './ui/Button';
 import { UserIcon, LockIcon, ShieldIcon, SunIcon, BellIcon, CalendarIcon, ActivityIcon, LogoutIcon } from './Icons';
+import api from '../utils/api';
 
-export default function SettingsView({ user, theme, setTheme, onLogout, todos }) {
+export default function SettingsView({ user, theme, setTheme, onLogout, todos, onUpdateUser }) {
   const currentUsername = typeof user === 'string' ? user : user?.username || 'User';
-  const currentEmail = typeof user === 'object' ? user?.email || `${currentUsername.toLowerCase()}@praskla.com` : `${currentUsername.toLowerCase()}@praskla.com`;
+  const currentEmail = typeof user === 'object' ? user?.email || `${currentUsername.toLowerCase()}@prasklatechnology.com` : `${currentUsername.toLowerCase()}@prasklatechnology.com`;
 
   const [activeTab, setActiveTab] = useState('account');
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [deadlineReminders, setDeadlineReminders] = useState(true);
+  const [emailNotifications, setEmailNotifications] = useState(() => user?.emailNotifications ?? true);
+  const [deadlineReminders, setDeadlineReminders] = useState(() => user?.deadlineReminders ?? true);
   const [statusMsg, setStatusMsg] = useState('');
+
+  useEffect(() => {
+    if (typeof user === 'object' && user) {
+      if (user.emailNotifications !== undefined) setEmailNotifications(user.emailNotifications);
+      if (user.deadlineReminders !== undefined) setDeadlineReminders(user.deadlineReminders);
+    }
+  }, [user]);
+
+  const handleToggleEmailNotifications = async (val) => {
+    setEmailNotifications(val);
+    try {
+      const res = await api.updateProfile({ emailNotifications: val });
+      if (res.success && onUpdateUser) onUpdateUser(res.user);
+      setStatusMsg('Email notification preferences updated in MongoDB.');
+      setTimeout(() => setStatusMsg(''), 3000);
+    } catch (err) {
+      console.error('Error updating settings in MongoDB:', err);
+    }
+  };
+
+  const handleToggleDeadlineReminders = async (val) => {
+    setDeadlineReminders(val);
+    try {
+      const res = await api.updateProfile({ deadlineReminders: val });
+      if (res.success && onUpdateUser) onUpdateUser(res.user);
+      setStatusMsg('Deadline reminder preferences updated in MongoDB.');
+      setTimeout(() => setStatusMsg(''), 3000);
+    } catch (err) {
+      console.error('Error updating settings in MongoDB:', err);
+    }
+  };
 
   const handleExportData = () => {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify({ user, todos }, null, 2));
@@ -138,7 +170,7 @@ export default function SettingsView({ user, theme, setTheme, onLogout, todos })
               <input
                 type="checkbox"
                 checked={emailNotifications}
-                onChange={(e) => setEmailNotifications(e.target.checked)}
+                onChange={(e) => handleToggleEmailNotifications(e.target.checked)}
               />
             </div>
             <div className="setting-toggle-row">
@@ -149,7 +181,7 @@ export default function SettingsView({ user, theme, setTheme, onLogout, todos })
               <input
                 type="checkbox"
                 checked={deadlineReminders}
-                onChange={(e) => setDeadlineReminders(e.target.checked)}
+                onChange={(e) => handleToggleDeadlineReminders(e.target.checked)}
               />
             </div>
           </div>

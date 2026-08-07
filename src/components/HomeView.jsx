@@ -3,7 +3,7 @@ import GlassCard from './ui/GlassCard';
 import CollapsiblePanel from './ui/CollapsiblePanel';
 import { PrimaryButton, SecondaryButton } from './ui/Button';
 import { PriorityBadge } from './ui/Badge';
-import { PlusIcon, SunIcon, BellIcon } from './Icons';
+import { PlusIcon, SunIcon, BellIcon, AwardIcon, FlameIcon, CheckIcon } from './Icons';
 
 export default function HomeView({ todos, user, onNavigateToTasks, onNavigateToActivity }) {
   const currentUsername = typeof user === 'string' ? user : user?.username || 'User';
@@ -80,20 +80,8 @@ export default function HomeView({ todos, user, onNavigateToTasks, onNavigateToA
 
           <div className="hero-quick-actions" style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
             <PrimaryButton icon={PlusIcon} onClick={onNavigateToTasks}>
-              Go to Task Workspace
+              Create Task
             </PrimaryButton>
-            <SecondaryButton icon={BellIcon} onClick={onNavigateToActivity}>
-              View Audit Logs
-            </SecondaryButton>
-          </div>
-        </div>
-
-        <div className="hero-clock-widget">
-          <div className="hero-time-display" style={{ fontSize: '1.65rem' }}>{formattedTimeStr}</div>
-          <div className="hero-date-display" style={{ fontSize: '0.82rem' }}>{formattedDate}</div>
-          <div className="hero-weather-badge" style={{ marginTop: '10px' }}>
-            <SunIcon size={14} />
-            <span>22°C Clear • Deep Focus Environment</span>
           </div>
         </div>
       </GlassCard>
@@ -163,94 +151,31 @@ export default function HomeView({ todos, user, onNavigateToTasks, onNavigateToA
           </CollapsiblePanel>
         </div>
 
-        {/* Right Column: Productivity Score & Workspace Alerts */}
+        {/* Right Column: Task Metrics */}
         <div className="home-grid-right" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* Panel 3: Productivity Score */}
-          <CollapsiblePanel title="Productivity Score">
-            <div className="score-card-body" style={{ textAlign: 'center', padding: '6px 0' }}>
-              <div className="radial-score-wrapper" style={{ margin: '0 auto 10px', width: '90px', height: '90px' }}>
-                <svg width="90" height="90" viewBox="0 0 120 120" className="radial-svg">
-                  <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border-color)" strokeWidth="10" />
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="50"
-                    fill="none"
-                    stroke="var(--accent-color)"
-                    strokeWidth="10"
-                    strokeDasharray="314"
-                    strokeDashoffset={314 - (314 * scorePercent) / 100}
-                    strokeLinecap="round"
-                    style={{ transition: 'stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1)' }}
-                  />
-                </svg>
-                <div className="score-percentage-text">
-                  <span style={{ fontSize: '1.25rem' }}>{scorePercent}%</span>
-                  <small style={{ fontSize: '0.68rem' }}>Efficiency</small>
-                </div>
-              </div>
-
+          {/* Panel 3: Task Metrics */}
+          <CollapsiblePanel title="Task Metrics">
+            <div className="score-card-body" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '16px 12px 10px', textAlign: 'center' }}>
+              
               {/* High-density metric breakdown */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', margin: '10px 0 6px', padding: '8px', borderRadius: 'var(--radius-sm)', background: 'var(--bg-input)', border: '1px solid var(--border-color)' }}>
-                <div>
-                  <span style={{ display: 'block', fontSize: '0.94rem', fontWeight: 800, color: 'var(--accent-color)' }}>{completedCount}</span>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Done</span>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', width: '100%', margin: '8px 0 12px', padding: '12px 8px', borderRadius: 'var(--radius-md)', background: 'var(--bg-input)', border: '1px solid var(--border-color)' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <span style={{ display: 'block', fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-color)' }}>{completedCount}</span>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)' }}>Done</span>
                 </div>
-                <div>
-                  <span style={{ display: 'block', fontSize: '0.94rem', fontWeight: 800, color: 'var(--warning-color)' }}>{pendingCount}</span>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Pending</span>
+                <div style={{ textAlign: 'center', borderLeft: '1px solid var(--border-color)', borderRight: '1px solid var(--border-color)' }}>
+                  <span style={{ display: 'block', fontSize: '1.1rem', fontWeight: 800, color: 'var(--warning-color)' }}>{pendingCount}</span>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)' }}>Pending</span>
                 </div>
-                <div>
-                  <span style={{ display: 'block', fontSize: '0.94rem', fontWeight: 800, color: 'var(--text-primary)' }}>{totalCount}</span>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Total</span>
+                <div style={{ textAlign: 'center' }}>
+                  <span style={{ display: 'block', fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>{totalCount}</span>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)' }}>Total</span>
                 </div>
               </div>
 
-              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                Completion velocity active across workspace.
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '4px 0 0', lineHeight: 1.4 }}>
+                Task velocity and completion status synced across workspace.
               </p>
-            </div>
-          </CollapsiblePanel>
-
-          {/* Panel 4: Workspace Alerts */}
-          <CollapsiblePanel title="Workspace Alerts">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '8px 10px',
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'var(--bg-input)',
-                  border: '1px solid var(--border-color)',
-                  fontSize: '0.82rem',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-color)', flexShrink: 0 }} />
-                  <span style={{ color: 'var(--text-secondary)' }}>Praskla Todo Engine synced.</span>
-                </div>
-                <span style={{ fontSize: '0.7rem', color: 'var(--accent-color)', fontWeight: 700 }}>Live</span>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '8px 10px',
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'var(--bg-input)',
-                  border: '1px solid var(--border-color)',
-                  fontSize: '0.82rem',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--warning-color)', flexShrink: 0 }} />
-                  <span style={{ color: 'var(--text-secondary)' }}>JWT Token session verified.</span>
-                </div>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Secured</span>
-              </div>
             </div>
           </CollapsiblePanel>
         </div>

@@ -1,51 +1,88 @@
-/* Floating Glass Panel / Card Surface (Apple VisionOS & Linear Aesthetic) */
+/* Floating Glass Panel / Card Surface (Professional Smooth Interactive Surface) */
 .glass-panel {
   background: var(--bg-card);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border: 1px solid var(--border-color);
-  border-top: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-glass);
-  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   height: auto;
 }
 
 .glass-card-hover:hover,
 .collapsible-panel:hover {
   background: var(--bg-card-hover);
-  border-color: var(--border-glass);
+  border-color: var(--accent-color);
   box-shadow: var(--shadow-strong);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
 .collapsible-panel .panel-header:hover .chevron-toggle-btn {
   color: var(--accent-color);
 }
 
-.glass-icon-badge:hover {
-  transform: scale(1.08) rotate(3deg);
+.glass-icon-badge {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* GPU Accelerated 60 FPS View Navigation Transition */
+.glass-icon-badge:hover {
+  transform: scale(1.08) translateY(-2px);
+}
+
+/* GPU Accelerated 60 FPS Tab & View Switch Animation System */
 .home-view-container,
 .tasks-view-container,
+.activity-view-container,
+.family-view-container,
 .profile-view-container,
-.settings-view-container {
-  animation: fadeInView 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+.settings-view-container,
+.calendar-view-container {
+  animation: tabViewSwitch 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
 }
 
-@keyframes fadeInView {
-  from {
+@keyframes tabViewSwitch {
+  0% {
     opacity: 0;
-    transform: translateY(6px);
-    filter: blur(4px);
+    transform: translateY(14px) scale(0.985);
+    filter: blur(6px);
   }
-  to {
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Staggered Card Entrance Effect when Switching Views */
+.home-view-container > *,
+.tasks-view-container > *,
+.activity-view-container > *,
+.family-view-container > *,
+.profile-view-container > *,
+.settings-view-container > * {
+  animation: tabChildEntrance 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.home-view-container > *:nth-child(1),
+.tasks-view-container > *:nth-child(1) { animation-delay: 0.03s; }
+.home-view-container > *:nth-child(2),
+.tasks-view-container > *:nth-child(2) { animation-delay: 0.08s; }
+.home-view-container > *:nth-child(3),
+.tasks-view-container > *:nth-child(3) { animation-delay: 0.13s; }
+
+@keyframes tabChildEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0);
   }
 }
 
@@ -987,11 +1024,15 @@
   border-radius: var(--radius-sm);
   background: var(--bg-input);
   border: 1px solid var(--border-color);
-  transition: all var(--transition-fast);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .home-task-item:hover {
   border-color: var(--accent-color);
+  transform: translateX(4px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 
 .home-task-bullet {
@@ -1183,48 +1224,132 @@
 
 .tasks-tab-bar {
   display: flex;
-  gap: 6px;
-  overflow-x: auto;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
   padding-bottom: 4px;
 }
 
-.tasks-tab-btn {
+.tasks-tab-btn,
+.chip-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: var(--radius-sm);
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 9999px;
   background: var(--bg-card);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--border-color);
-  font-size: 0.85rem;
-  font-weight: 600;
+  border: 1.5px solid var(--border-color);
+  font-size: 0.86rem;
+  font-weight: 700;
   color: var(--text-secondary);
-  transition: all var(--transition-fast);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.tasks-tab-btn:hover {
-  color: var(--text-primary);
-  background: var(--accent-soft);
+.tasks-tab-btn:hover,
+.chip-pill:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
-.tasks-tab-btn.active {
+.tasks-tab-btn.active,
+.chip-pill.active {
   background: var(--accent-color);
   color: #ffffff;
   border-color: var(--accent-color);
-  box-shadow: 0 4px 12px var(--accent-soft);
+  box-shadow: 0 6px 18px var(--accent-soft);
+  transform: scale(1.04);
 }
 
 .tab-count-badge {
-  padding: 2px 6px;
-  border-radius: var(--radius-full);
-  background: rgba(0, 0, 0, 0.15);
-  font-size: 0.74rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  transition: all 0.25s ease;
+}
+
+.chip-pill.active .tab-count-badge,
+.tasks-tab-btn.active .tab-count-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  border: none;
 }
 
 .tasks-tab-btn.active .tab-count-badge {
   background: rgba(255, 255, 255, 0.25);
+}
+
+/* Navbar Clock Chip & Achievement Badges */
+.navbar-clock-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.navbar-achievements-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-achievement-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 9999px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.navbar-achievement-badge:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--accent-color);
+}
+
+.navbar-achievement-badge.gold { color: #eab308; }
+.navbar-achievement-badge.flame { color: #f97316; }
+.navbar-achievement-badge.green { color: #10b981; }
+
+.navbar-achievement-badge .badge-value {
+  color: var(--text-primary);
+  font-size: 0.76rem;
+  font-weight: 800;
 }
 
 /* Profile View */

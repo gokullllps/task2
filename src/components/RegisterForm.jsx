@@ -47,7 +47,13 @@ export default function RegisterForm({ onRegisterSuccess }) {
 
       if (result.requiresOtp) {
         if (onRegisterSuccess) {
-          onRegisterSuccess(null, { requiresOtp: true, email: result.email, devOtp: result.devOtp, message: result.message });
+          onRegisterSuccess(null, {
+            requiresOtp: true,
+            username: result.username || username,
+            email: result.email || email,
+            password: result.password || password,
+            message: result.message,
+          });
         }
       } else if (result.success) {
         setSuccessMessage('Account created successfully! Signing in...');

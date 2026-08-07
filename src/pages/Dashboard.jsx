@@ -245,6 +245,7 @@ export default function Dashboard({ onLogout, theme, setTheme, user }) {
           theme={theme}
           setTheme={setTheme}
           user={currentUserObj}
+          todos={todos}
           currentView={currentView}
           onOpenMobileMenu={() => setMobileMenuOpen(true)}
           onSwitchUser={handleSwitchUser}
@@ -323,7 +324,13 @@ export default function Dashboard({ onLogout, theme, setTheme, user }) {
               />
             )}
 
-            {currentView === 'profile' && <ProfileView user={currentUserObj} todos={todos} />}
+            {currentView === 'profile' && (
+              <ProfileView
+                user={currentUserObj}
+                todos={todos}
+                onUpdateUser={setCurrentUserObj}
+              />
+            )}
 
             {currentView === 'settings' && (
               <SettingsView
@@ -332,6 +339,7 @@ export default function Dashboard({ onLogout, theme, setTheme, user }) {
                 setTheme={setTheme}
                 onLogout={onLogout}
                 todos={todos}
+                onUpdateUser={setCurrentUserObj}
               />
             )}
           </div>

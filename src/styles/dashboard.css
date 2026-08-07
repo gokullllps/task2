@@ -9,19 +9,20 @@
   background-attachment: fixed;
 }
 
-/* Sidebar Styling */
+/* Sidebar Styling (Curved Floating Navigation) */
 .sidebar {
   width: 260px;
   background: var(--bg-sidebar);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border-right: 1px solid var(--border-color);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
+  top: 14px;
+  bottom: 14px;
+  left: 14px;
   z-index: 40;
   transition: transform var(--transition-base);
   box-shadow: var(--shadow-glass);
@@ -209,23 +210,26 @@
 /* Dashboard Main Wrapper */
 .dashboard-body {
   flex: 1;
-  margin-left: 260px;
+  margin-left: 288px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   min-width: 0;
+  padding-right: 14px;
 }
 
-/* Top Navbar Header */
+/* Top Navbar Header (Curved Floating Header) */
 .navbar {
   background: var(--navbar-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid var(--border-color);
-  position: sticky;
-  top: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  position: relative;
+  top: auto;
   z-index: 30;
   box-shadow: var(--shadow-glass);
+  margin-top: 14px;
 }
 
 .navbar-container {

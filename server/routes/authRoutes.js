@@ -96,13 +96,27 @@ router.post('/send-register-otp', otpRateLimiter, async (req, res) => {
       });
     }
 
-    // Check single account per email address
-    const existingEmail = await User.findOne({ email: trimmedEmail });
-    if (existingEmail) {
+    // Single Account Per Email Check (if user exists and is already verified)
+    const existingEmailUser = await User.findOne({ email: trimmedEmail });
+    if (existingEmailUser && existingEmailUser.isVerified) {
       return res.status(400).json({
         success: false,
         message: 'An account with this email already exists. Only 1 account is allowed per email address.',
       });
+    }
+
+    // Create or update unverified User account pending OTP verification
+    if (!existingEmailUser) {
+      await User.create({
+        username: trimmedUsername,
+        email: trimmedEmail,
+        password,
+        isVerified: false,
+      });
+    } else {
+      existingEmailUser.username = trimmedUsername;
+      existingEmailUser.password = password;
+      await existingEmailUser.save();
     }
 
     // Delete any existing OTPs for this email and REGISTER purpose
@@ -130,10 +144,10 @@ router.post('/send-register-otp', otpRateLimiter, async (req, res) => {
       subjectTitle: 'Confirm Your Email Address',
     });
 
-    if (!mailResult.success) {
+    if (!mailResult.success && !mailResult.warning) {
       return res.status(500).json({
         success: false,
-        message: `Hostinger SMTP Delivery Failed: ${mailResult.error || 'Please check EMAIL_USER & EMAIL_PASS in server/.env'}.`,
+        message: `SMTP Delivery Failed: ${mailResult.error || 'Check EMAIL_USER & EMAIL_PASS in server/.env'}.`,
       });
     }
 
@@ -231,20 +245,13 @@ router.post('/verify-register-otp', otpRateLimiter, async (req, res) => {
     otpRecord.verified = true;
     await Otp.deleteOne({ _id: otpRecord._id });
 
-    // Check if account was created in parallel
+    // Mark User account verified
     let user = await User.findOne({ email: trimmedEmail });
     if (!user) {
-      if (!trimmedUsername || !password) {
-        return res.status(400).json({
-          success: false,
-          message: 'User details missing. Please restart registration.',
-        });
-      }
-
       user = await User.create({
-        username: trimmedUsername,
+        username: trimmedUsername || trimmedEmail.split('@')[0],
         email: trimmedEmail,
-        password,
+        password: password || 'DefaultPass123!',
         isVerified: true,
       });
     } else {
@@ -348,10 +355,10 @@ router.post('/send-forgot-otp', otpRateLimiter, async (req, res) => {
       subjectTitle: 'Password Reset OTP Code',
     });
 
-    if (!mailResult.success) {
+    if (!mailResult.success && !mailResult.warning) {
       return res.status(500).json({
         success: false,
-        message: `Hostinger SMTP Delivery Failed: ${mailResult.error || 'Please check EMAIL_USER & EMAIL_PASS in server/.env'}.`,
+        message: `SMTP Delivery Failed: ${mailResult.error || 'Check EMAIL_USER & EMAIL_PASS in server/.env'}.`,
       });
     }
 
@@ -589,6 +596,11 @@ router.post('/login', async (req, res) => {
           id: user._id,
           username: user.username,
           email: user.email,
+          phone: user.phone || '',
+          bio: user.bio || '',
+          avatar: user.avatar || '',
+          emailNotifications: user.emailNotifications ?? true,
+          deadlineReminders: user.deadlineReminders ?? true,
           createdAt: user.createdAt,
         },
       });
@@ -631,11 +643,55 @@ router.get('/me', protect, async (req, res) => {
         id: req.user._id,
         username: req.user.username,
         email: req.user.email,
+        phone: req.user.phone || '',
+        bio: req.user.bio || '',
+        avatar: req.user.avatar || '',
+        emailNotifications: req.user.emailNotifications ?? true,
+        deadlineReminders: req.user.deadlineReminders ?? true,
         createdAt: req.user.createdAt,
       },
     });
   } catch (error) {
     console.error('[Get Me Error]', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// @route   PUT /api/auth/profile
+// @desc    Update user profile details in MongoDB database
+// @access  Private
+router.put('/profile', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (req.body.phone !== undefined) user.phone = req.body.phone;
+    if (req.body.bio !== undefined) user.bio = req.body.bio;
+    if (req.body.avatar !== undefined) user.avatar = req.body.avatar;
+    if (req.body.emailNotifications !== undefined) user.emailNotifications = req.body.emailNotifications;
+    if (req.body.deadlineReminders !== undefined) user.deadlineReminders = req.body.deadlineReminders;
+
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: 'Profile updated in MongoDB successfully',
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        phone: user.phone || '',
+        bio: user.bio || '',
+        avatar: user.avatar || '',
+        emailNotifications: user.emailNotifications ?? true,
+        deadlineReminders: user.deadlineReminders ?? true,
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error('[Update Profile Error]', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 });

@@ -42,6 +42,26 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    phone: {
+      type: String,
+      default: '',
+    },
+    bio: {
+      type: String,
+      default: '',
+    },
+    avatar: {
+      type: String,
+      default: '',
+    },
+    emailNotifications: {
+      type: Boolean,
+      default: true,
+    },
+    deadlineReminders: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

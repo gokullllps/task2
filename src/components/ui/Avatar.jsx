@@ -53,7 +53,7 @@ export default function Avatar({
             justifyContent: 'center',
             fontWeight: 800,
             fontSize: dim.fontSize,
-            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
+            boxShadow: '0 4px 12px var(--accent-soft)',
           }}
         >
           {initial}

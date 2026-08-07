@@ -15,10 +15,24 @@ export default function RegisterForm({ onRegisterSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Password Strength Criteria Evaluation
+  const hasMinLength = password.length >= 8;
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSpecial = /[@$!%*?&^#_\-\+=~]/.test(password);
+  const isPasswordStrong = hasMinLength && hasUpper && hasLower && hasNumber && hasSpecial;
+
   async function handleSubmit(e) {
     e.preventDefault();
 
     const validationErrors = validateRegister(username, email, password, confirmPassword);
+
+    if (!isPasswordStrong) {
+      validationErrors.password =
+        'Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.';
+    }
+
     setErrors(validationErrors);
     setAuthError('');
     setSuccessMessage('');
@@ -31,7 +45,11 @@ export default function RegisterForm({ onRegisterSuccess }) {
     try {
       const result = await registerUser({ username, email, password });
 
-      if (result.success) {
+      if (result.requiresOtp) {
+        if (onRegisterSuccess) {
+          onRegisterSuccess(null, { requiresOtp: true, email: result.email, devOtp: result.devOtp, message: result.message });
+        }
+      } else if (result.success) {
         setSuccessMessage('Account created successfully! Signing in...');
         createSession(result.user);
         setTimeout(() => {
@@ -49,7 +67,7 @@ export default function RegisterForm({ onRegisterSuccess }) {
   }
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit} noValidate>
+    <form className="auth-form-container" onSubmit={handleSubmit} noValidate>
       <TextInput
         id="reg-username"
         label="Username"
@@ -65,7 +83,7 @@ export default function RegisterForm({ onRegisterSuccess }) {
 
       <TextInput
         id="reg-email"
-        label="Email Address"
+        label="Email Address (1 Account Per Email)"
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -76,19 +94,48 @@ export default function RegisterForm({ onRegisterSuccess }) {
         disabled={isSubmitting}
       />
 
-      <TextInput
-        id="reg-password"
-        label="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="At least 6 characters"
-        autoComplete="new-password"
-        icon={LockIcon}
-        showPasswordToggle={true}
-        error={errors.password}
-        disabled={isSubmitting}
-      />
+      <div className="form-field-group">
+        <TextInput
+          id="reg-password"
+          label="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Min 8 chars (1 upper, 1 lower, 1 num, 1 special)"
+          autoComplete="new-password"
+          icon={LockIcon}
+          showPasswordToggle={true}
+          error={errors.password}
+          disabled={isSubmitting}
+        />
+
+        {/* Real-time Strong Password Criteria Checklist */}
+        <div className="password-criteria-box">
+          <div className="criteria-title">Password Security Requirements:</div>
+          <div className="criteria-list">
+            <div className={`criteria-item ${hasMinLength ? 'valid' : ''}`}>
+              <div className="criteria-bullet" />
+              <span>Min 8 characters</span>
+            </div>
+            <div className={`criteria-item ${hasUpper ? 'valid' : ''}`}>
+              <div className="criteria-bullet" />
+              <span>1 Uppercase letter (A-Z)</span>
+            </div>
+            <div className={`criteria-item ${hasLower ? 'valid' : ''}`}>
+              <div className="criteria-bullet" />
+              <span>1 Lowercase letter (a-z)</span>
+            </div>
+            <div className={`criteria-item ${hasNumber ? 'valid' : ''}`}>
+              <div className="criteria-bullet" />
+              <span>1 Number (0-9)</span>
+            </div>
+            <div className={`criteria-item ${hasSpecial ? 'valid' : ''}`} style={{ gridColumn: 'span 2' }}>
+              <div className="criteria-bullet" />
+              <span>1 Special character (@ $ ! % * ? & ^ # _ - + = ~)</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <TextInput
         id="reg-confirm-password"
@@ -104,8 +151,8 @@ export default function RegisterForm({ onRegisterSuccess }) {
         disabled={isSubmitting}
       />
 
-      {authError && <div className="auth-error">{authError}</div>}
-      {successMessage && <div className="auth-success">{successMessage}</div>}
+      {authError && <div className="auth-error" style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', color: '#f87171', fontSize: '0.85rem' }}>{authError}</div>}
+      {successMessage && <div className="auth-success" style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid #10b981', color: '#10b981', fontSize: '0.85rem' }}>{successMessage}</div>}
 
       <Button
         type="submit"
@@ -119,4 +166,5 @@ export default function RegisterForm({ onRegisterSuccess }) {
     </form>
   );
 }
+
 

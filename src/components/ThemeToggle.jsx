@@ -1,11 +1,37 @@
 import React, { useState } from 'react';
 import { SunIcon, MoonIcon } from './Icons';
 
+function playThemeSwitchSound() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(850, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.022);
+
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.022);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.022);
+  } catch {
+    // Ignore autoplay restriction exceptions
+  }
+}
+
 export default function ThemeToggle({ theme, setTheme }) {
   const [isPressed, setIsPressed] = useState(false);
   const isDark = theme === 'dark';
 
   function toggleTheme() {
+    playThemeSwitchSound();
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   }
 

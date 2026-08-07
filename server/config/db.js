@@ -25,11 +25,15 @@ const connectDB = async () => {
     console.log('[Database] Initializing resilient In-Memory MongoDB Server fallback...');
 
     try {
-      // Dynamic import of MongoMemoryServer with Debian 12+ compatible binary version (>=7.0.3)
       const { MongoMemoryServer } = await import('mongodb-memory-server');
-      mongoMemoryServer = await MongoMemoryServer.create({
-        binary: { version: '7.0.3' },
-      });
+      try {
+        mongoMemoryServer = await MongoMemoryServer.create({
+          binary: { version: '7.0.3' },
+        });
+      } catch (err) {
+        console.log('[Database] Retrying In-Memory MongoDB Server with default options...');
+        mongoMemoryServer = await MongoMemoryServer.create();
+      }
       const memoryUri = mongoMemoryServer.getUri();
 
       const conn = await mongoose.connect(memoryUri);

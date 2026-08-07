@@ -25,7 +25,7 @@
 .orb-1 {
   width: 450px;
   height: 450px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0) 70%);
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(124, 58, 237, 0) 70%);
   top: -120px;
   left: -120px;
 }
@@ -33,7 +33,7 @@
 .orb-2 {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(5, 150, 105, 0.2) 0%, rgba(5, 150, 105, 0) 70%);
+  background: radial-gradient(circle, rgba(91, 33, 182, 0.1) 0%, rgba(91, 33, 182, 0) 70%);
   bottom: -150px;
   right: -150px;
   animation-delay: -4s;
@@ -42,7 +42,7 @@
 .orb-3 {
   width: 350px;
   height: 350px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 70%);
+  background: radial-gradient(circle, rgba(148, 163, 184, 0.08) 0%, rgba(148, 163, 184, 0) 70%);
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -76,7 +76,7 @@
 .login-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 20px var(--accent-soft);
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: var(--accent-color);
 }
 
 @keyframes fadeInUp {
@@ -102,7 +102,7 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 18px;
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 6px 20px var(--accent-soft);
   transition: transform 0.3s ease;
 }
 
@@ -124,33 +124,17 @@
   margin-bottom: 26px;
 }
 
-/* Animated Segmented Control (Reference Image 4 inspiration) */
+/* Animated Segmented Control Tabs */
 .segmented-control {
   position: relative;
   display: flex;
   align-items: center;
   background: var(--bg-input);
   padding: 4px;
-  border-radius: 999px;
-  margin-bottom: 26px;
+  border-radius: 9999px;
+  margin-bottom: 24px;
   border: 1px solid var(--border-color);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-  user-select: none;
-}
-
-.segmented-indicator {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  width: calc(50% - 4px);
-  border-radius: 999px;
-  background: var(--bg-card);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.5);
-  transition: left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 1;
 }
 
 .segmented-tab {
@@ -161,12 +145,15 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-muted);
-  background: none;
+  background: transparent;
   border: none;
   cursor: pointer;
-  border-radius: 999px;
-  transition: color 0.3s ease;
+  border-radius: 9999px;
+  transition: all 0.25s ease;
   outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .segmented-tab:hover {
@@ -174,8 +161,10 @@
 }
 
 .segmented-tab.active {
-  color: var(--accent-color);
+  background: var(--accent-gradient);
+  color: #ffffff !important;
   font-weight: 700;
+  box-shadow: 0 4px 14px var(--accent-soft);
 }
 
 .segmented-tab:focus-visible {
@@ -185,22 +174,145 @@
 
 .auth-form-container {
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   animation: fadeIn 0.3s ease;
 }
 
+.form-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.forgot-btn-link {
+  background: transparent;
+  border: none;
+  color: var(--accent-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.forgot-btn-link:hover {
+  text-decoration: underline;
+  color: var(--accent-hover);
+}
+
+.password-criteria-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.criteria-title {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.criteria-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+}
+
+.criteria-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.criteria-item.valid {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.criteria-bullet {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.criteria-item.valid .criteria-bullet {
+  background: #10b981;
+}
+
+/* Modal Overlay for Password Reset & Email OTP Verification */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.85) 0%, rgba(9, 9, 11, 0.94) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reset-modal-card {
+  width: 100%;
+  max-width: 450px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: 24px;
+  padding: 36px 30px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.45), 0 0 35px rgba(124, 58, 237, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .login-footer {
-  margin-top: 26px;
+  margin-top: 24px;
   border-top: 1px solid var(--border-color);
-  padding-top: 20px;
+  padding-top: 18px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 12px;
 }
 
 .security-notice {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   font-size: 0.78rem;
   font-weight: 600;
@@ -213,7 +325,11 @@
 
 @media (max-width: 480px) {
   .login-card {
-    padding: 30px 22px;
+    padding: 28px 20px;
     border-radius: var(--radius-lg);
+  }
+
+  .criteria-list {
+    grid-template-columns: 1fr;
   }
 }

@@ -76,9 +76,15 @@ async function request(endpoint, options = {}) {
 export const api = {
   // Auth endpoints
   register: (userData) => request('/auth/register', { method: 'POST', body: JSON.stringify(userData) }),
+  sendRegisterOtp: (userData) => request('/auth/send-register-otp', { method: 'POST', body: JSON.stringify(userData) }),
+  verifyRegisterOtp: (data) => request('/auth/verify-register-otp', { method: 'POST', body: JSON.stringify(data) }),
+  sendForgotOtp: (email) => request('/auth/send-forgot-otp', { method: 'POST', body: JSON.stringify({ email }) }),
+  verifyForgotOtp: (data) => request('/auth/verify-forgot-otp', { method: 'POST', body: JSON.stringify(data) }),
   login: (credentials) => request('/auth/login', { method: 'POST', body: JSON.stringify(credentials) }),
   logout: () => request('/auth/logout', { method: 'POST' }),
   getMe: () => request('/auth/me', { method: 'GET' }),
+  forgotPassword: (email) => request('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
+  resetPassword: (data) => request('/auth/reset-password', { method: 'POST', body: JSON.stringify(data) }),
 
   // Todo endpoints
   getTodos: (search = '') => request(`/todos${search ? `?search=${encodeURIComponent(search)}` : ''}`, { method: 'GET' }),

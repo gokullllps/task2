@@ -114,7 +114,7 @@
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   color: var(--accent-color);
-  border-color: rgba(16, 185, 129, 0.35);
+  border-color: var(--accent-color);
   font-weight: 700;
   box-shadow: var(--shadow-glass);
 }
@@ -122,7 +122,7 @@
 .sidebar-nav-item.active .nav-icon-wrapper {
   background: var(--bg-card-hover);
   color: var(--accent-color);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 12px var(--accent-soft), inset 0 1px 1px rgba(255, 255, 255, 0.5);
 }
 
 .nav-active-ring {
@@ -130,7 +130,7 @@
   inset: -2px;
   border-radius: 50%;
   padding: 2px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(16, 185, 129, 0.9), rgba(59, 130, 246, 0.8), rgba(236, 72, 153, 0.8));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(168, 85, 247, 0.9), rgba(59, 130, 246, 0.8), rgba(236, 72, 153, 0.8));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -291,6 +291,27 @@
 }
 
 /* Breakpoint responsiveness */
+@media (max-width: 992px) {
+  .home-main-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .welcome-hero-card {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start !important;
+  }
+
+  .hero-content-left {
+    max-width: 100% !important;
+  }
+
+  .hero-clock-widget {
+    width: 100%;
+    text-align: left !important;
+  }
+}
+
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);

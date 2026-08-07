@@ -499,9 +499,7 @@ export default function AccountSwitcher({ currentUser, onSwitchUser, onLogout, o
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {isActive ? (
-                          <span style={{ fontSize: '0.74rem', color: 'var(--accent-color)', fontWeight: 800, background: 'var(--accent-soft)', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>
-                            Active
-                          </span>
+                          <CheckIcon size={18} style={{ color: 'var(--accent-color)' }} />
                         ) : (
                           <>
                             <SecondaryButton size="sm" onClick={() => handleSelectAccount(acc)}>

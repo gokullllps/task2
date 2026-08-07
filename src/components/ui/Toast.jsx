@@ -20,7 +20,7 @@ export function Toast({
     success: {
       icon: CheckIcon,
       bgColor: 'var(--success-soft)',
-      borderColor: 'rgba(16, 185, 129, 0.4)',
+      borderColor: 'var(--success-soft)',
       textColor: 'var(--success-color)',
     },
     error: {
@@ -38,7 +38,7 @@ export function Toast({
     info: {
       icon: CheckIcon,
       bgColor: 'var(--accent-soft)',
-      borderColor: 'rgba(16, 185, 129, 0.3)',
+      borderColor: 'var(--accent-soft)',
       textColor: 'var(--accent-color)',
     },
   };

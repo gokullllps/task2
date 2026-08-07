@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import GlassCard from './ui/GlassCard';
-import StatCard from './ui/StatCard';
+import CollapsiblePanel from './ui/CollapsiblePanel';
 import { PrimaryButton, SecondaryButton } from './ui/Button';
 import { PriorityBadge } from './ui/Badge';
-import { TaskIcon, CheckIcon, ClockIcon, FlameIcon, CalendarIcon, PlusIcon, AwardIcon, SunIcon, BellIcon } from './Icons';
+import { PlusIcon, SunIcon, BellIcon } from './Icons';
 
 export default function HomeView({ todos, user, onNavigateToTasks, onNavigateToActivity }) {
   const currentUsername = typeof user === 'string' ? user : user?.username || 'User';
@@ -48,22 +48,37 @@ export default function HomeView({ todos, user, onNavigateToTasks, onNavigateToA
   }, [todos]);
 
   return (
-    <div className="home-view-container">
-      {/* Welcome Hero Banner */}
-      <GlassCard className="welcome-hero-card" hoverEffect={false}>
-        <div className="hero-content-left">
-          <div className="hero-badge">
-            <span className="hero-pulse-dot" />
-            <span>Praskla Todo Active</span>
-          </div>
-          <h1 className="hero-greeting">
+    <div className="home-view-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* Top Hero Section with Progress Indicator */}
+      <GlassCard className="welcome-hero-card" hoverEffect={false} style={{ borderRadius: '18px', padding: '22px 26px' }}>
+        <div className="hero-content-left" style={{ flex: 1 }}>
+          <h1 className="hero-greeting" style={{ fontSize: '1.65rem', marginBottom: '4px', lineHeight: 1.2 }}>
             {greeting}, <span className="hero-username">{currentUsername}</span>
           </h1>
-          <p className="hero-subtitle">
+          <p className="hero-subtitle" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
             You have <strong style={{ color: 'var(--accent-color)' }}>{pendingCount} pending task{pendingCount !== 1 ? 's' : ''}</strong> scheduled for today.
           </p>
 
-          <div className="hero-quick-actions" style={{ display: 'flex', gap: '12px' }}>
+          {/* Structured Workspace Progress Bar */}
+          <div style={{ marginTop: '14px', maxWidth: '420px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
+              <span>Workspace Progress</span>
+              <span style={{ color: 'var(--accent-color)' }}>{completedCount} of {totalCount} completed</span>
+            </div>
+            <div style={{ width: '100%', height: '6px', borderRadius: '9999px', background: 'var(--bg-input)', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+              <div
+                style={{
+                  width: `${scorePercent}%`,
+                  height: '100%',
+                  background: 'var(--accent-gradient)',
+                  borderRadius: '9999px',
+                  transition: 'width 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="hero-quick-actions" style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
             <PrimaryButton icon={PlusIcon} onClick={onNavigateToTasks}>
               Go to Task Workspace
             </PrimaryButton>
@@ -74,47 +89,36 @@ export default function HomeView({ todos, user, onNavigateToTasks, onNavigateToA
         </div>
 
         <div className="hero-clock-widget">
-          <div className="hero-time-display">{formattedTimeStr}</div>
-          <div className="hero-date-display">{formattedDate}</div>
-          <div className="hero-weather-badge">
+          <div className="hero-time-display" style={{ fontSize: '1.65rem' }}>{formattedTimeStr}</div>
+          <div className="hero-date-display" style={{ fontSize: '0.82rem' }}>{formattedDate}</div>
+          <div className="hero-weather-badge" style={{ marginTop: '10px' }}>
             <SunIcon size={14} />
             <span>22°C Clear • Deep Focus Environment</span>
           </div>
         </div>
       </GlassCard>
 
-      {/* Quick Statistics Grid */}
-      <section className="home-metrics-grid">
-        <StatCard label="Total Workspace Tasks" value={totalCount} icon={TaskIcon} variant="accent" />
-        <StatCard label="Completed Tasks" value={completedCount} icon={CheckIcon} variant="success" />
-        <StatCard label="Pending Action Items" value={pendingCount} icon={ClockIcon} variant="warning" />
-        <StatCard label="Productivity Velocity" value={`${scorePercent}%`} icon={FlameIcon} variant="flame" progress={scorePercent} />
-      </section>
-
-      {/* Clean Home Main Grid */}
-      <div className="home-main-grid">
-        {/* Left Column: Today's Tasks Overview */}
-        <div className="home-grid-left">
-          <GlassCard className="home-card" hoverEffect={false}>
-            <div className="home-card-header">
-              <div className="home-card-title">
-                <CalendarIcon size={18} />
-                <span>Today's Task Overview</span>
-              </div>
+      {/* Main Dashboard Grid */}
+      <div className="home-main-grid" style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr', gap: '16px' }}>
+        {/* Left Column: Today's Tasks & Upcoming Priorities */}
+        <div className="home-grid-left" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Panel 1: Today's Task Overview */}
+          <CollapsiblePanel
+            title="Today's Task Overview"
+            action={
               <SecondaryButton size="sm" onClick={onNavigateToTasks}>
                 View All ({totalCount})
               </SecondaryButton>
-            </div>
-
+            }
+          >
             {todaysTasks.length === 0 ? (
-              <div className="empty-home-tasks" style={{ padding: '32px 16px', textAlign: 'center' }}>
-                <CheckIcon size={36} style={{ color: 'var(--accent-color)', opacity: 0.6, marginBottom: '8px' }} />
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+              <div className="empty-home-tasks" style={{ padding: '20px 14px', textAlign: 'center' }}>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>
                   All caught up! No pending tasks in your workspace.
                 </p>
               </div>
             ) : (
-              <div className="home-task-list">
+              <div className="home-task-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {todaysTasks.map((todo) => (
                   <div key={todo.id || todo._id} className={`home-task-item ${todo.completed ? 'completed' : ''}`}>
                     <div className="home-task-bullet" />
@@ -122,91 +126,136 @@ export default function HomeView({ todos, user, onNavigateToTasks, onNavigateToA
                       <span className="home-task-title">{todo.title}</span>
                       {todo.description && <span className="home-task-desc">{todo.description}</span>}
                     </div>
-                    <PriorityBadge priority={todo.priority} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                        {todo.dueDate ? new Date(todo.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Today'}
+                      </span>
+                      <PriorityBadge priority={todo.priority} />
+                    </div>
                   </div>
                 ))}
               </div>
             )}
-          </GlassCard>
+          </CollapsiblePanel>
 
-          {/* Upcoming High-Priority Tasks Card */}
-          <GlassCard className="home-card" hoverEffect={false}>
-            <div className="home-card-header">
-              <div className="home-card-title">
-                <ClockIcon size={18} />
-                <span>Upcoming Priorities</span>
-              </div>
-            </div>
+          {/* Panel 2: Upcoming Priorities */}
+          <CollapsiblePanel title="Upcoming Priorities">
             {upcomingTasks.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.86rem', padding: '12px 0' }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.84rem', padding: '6px 0' }}>
                 No upcoming high priority deadlines.
               </p>
             ) : (
-              <div className="home-task-list">
+              <div className="home-task-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {upcomingTasks.map((todo) => (
                   <div key={todo.id || todo._id} className="home-task-item">
                     <div className="home-task-bullet" style={{ background: 'var(--warning-color)' }} />
                     <div className="home-task-info">
                       <span className="home-task-title">{todo.title}</span>
                     </div>
-                    <PriorityBadge priority={todo.priority || 'high'} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>Urgent</span>
+                      <PriorityBadge priority={todo.priority || 'high'} />
+                    </div>
                   </div>
                 ))}
               </div>
             )}
-          </GlassCard>
+          </CollapsiblePanel>
         </div>
 
-        {/* Right Column: Productivity Score Gauge & Notifications Preview */}
-        <div className="home-grid-right">
-          <GlassCard className="home-card score-card" hoverEffect={false}>
-            <div className="home-card-title" style={{ marginBottom: '16px', justifyContent: 'center' }}>
-              <AwardIcon size={18} />
-              <span>Productivity Score</span>
-            </div>
+        {/* Right Column: Productivity Score & Workspace Alerts */}
+        <div className="home-grid-right" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Panel 3: Productivity Score */}
+          <CollapsiblePanel title="Productivity Score">
+            <div className="score-card-body" style={{ textAlign: 'center', padding: '6px 0' }}>
+              <div className="radial-score-wrapper" style={{ margin: '0 auto 10px', width: '90px', height: '90px' }}>
+                <svg width="90" height="90" viewBox="0 0 120 120" className="radial-svg">
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border-color)" strokeWidth="10" />
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="50"
+                    fill="none"
+                    stroke="var(--accent-color)"
+                    strokeWidth="10"
+                    strokeDasharray="314"
+                    strokeDashoffset={314 - (314 * scorePercent) / 100}
+                    strokeLinecap="round"
+                    style={{ transition: 'stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1)' }}
+                  />
+                </svg>
+                <div className="score-percentage-text">
+                  <span style={{ fontSize: '1.25rem' }}>{scorePercent}%</span>
+                  <small style={{ fontSize: '0.68rem' }}>Efficiency</small>
+                </div>
+              </div>
 
-            <div className="radial-score-wrapper">
-              <svg width="120" height="120" viewBox="0 0 120 120" className="radial-svg">
-                <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border-color)" strokeWidth="10" />
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="50"
-                  fill="none"
-                  stroke="var(--accent-color)"
-                  strokeWidth="10"
-                  strokeDasharray="314"
-                  strokeDashoffset={314 - (314 * scorePercent) / 100}
-                  strokeLinecap="round"
-                  style={{ transition: 'stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1)' }}
-                />
-              </svg>
-              <div className="score-percentage-text">
-                <span>{scorePercent}%</span>
-                <small>Efficiency</small>
+              {/* High-density metric breakdown */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', margin: '10px 0 6px', padding: '8px', borderRadius: 'var(--radius-sm)', background: 'var(--bg-input)', border: '1px solid var(--border-color)' }}>
+                <div>
+                  <span style={{ display: 'block', fontSize: '0.94rem', fontWeight: 800, color: 'var(--accent-color)' }}>{completedCount}</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Done</span>
+                </div>
+                <div>
+                  <span style={{ display: 'block', fontSize: '0.94rem', fontWeight: 800, color: 'var(--warning-color)' }}>{pendingCount}</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Pending</span>
+                </div>
+                <div>
+                  <span style={{ display: 'block', fontSize: '0.94rem', fontWeight: 800, color: 'var(--text-primary)' }}>{totalCount}</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Total</span>
+                </div>
               </div>
-            </div>
-          </GlassCard>
 
-          {/* System Notifications Preview */}
-          <GlassCard className="home-card" hoverEffect={false}>
-            <div className="home-card-title">
-              <BellIcon size={18} />
-              <span>Workspace Alerts</span>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                Completion velocity active across workspace.
+              </p>
             </div>
-            <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ display: 'flex', gap: '10px', padding: '10px', borderRadius: 'var(--radius-sm)', background: 'var(--bg-input)', fontSize: '0.84rem' }}>
-                <span style={{ color: 'var(--accent-color)', fontWeight: 700 }}>System</span>
-                <span style={{ color: 'var(--text-secondary)' }}>Praskla Todo Engine is active and synced.</span>
+          </CollapsiblePanel>
+
+          {/* Panel 4: Workspace Alerts */}
+          <CollapsiblePanel title="Workspace Alerts">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 10px',
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'var(--bg-input)',
+                  border: '1px solid var(--border-color)',
+                  fontSize: '0.82rem',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-color)', flexShrink: 0 }} />
+                  <span style={{ color: 'var(--text-secondary)' }}>Praskla Todo Engine synced.</span>
+                </div>
+                <span style={{ fontSize: '0.7rem', color: 'var(--accent-color)', fontWeight: 700 }}>Live</span>
               </div>
-              <div style={{ display: 'flex', gap: '10px', padding: '10px', borderRadius: 'var(--radius-sm)', background: 'var(--bg-input)', fontSize: '0.84rem' }}>
-                <span style={{ color: 'var(--warning-color)', fontWeight: 700 }}>Security</span>
-                <span style={{ color: 'var(--text-secondary)' }}>JWT Token session verified.</span>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 10px',
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'var(--bg-input)',
+                  border: '1px solid var(--border-color)',
+                  fontSize: '0.82rem',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--warning-color)', flexShrink: 0 }} />
+                  <span style={{ color: 'var(--text-secondary)' }}>JWT Token session verified.</span>
+                </div>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Secured</span>
               </div>
             </div>
-          </GlassCard>
+          </CollapsiblePanel>
         </div>
       </div>
     </div>
   );
 }
+

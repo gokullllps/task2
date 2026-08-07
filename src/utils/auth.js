@@ -110,15 +110,15 @@ export function removeSavedAccount(targetUserId) {
  */
 export async function registerUser({ username, email, password }) {
   try {
-    const data = await api.register({ username, email, password });
-    if (data.token && data.user) {
-      saveAccountSession(data.user, data.token);
+    const data = await api.sendRegisterOtp({ username, email, password });
+    if (data.success) {
+      return { success: true, requiresOtp: true, username, email, password, message: data.message };
     }
-    return { success: true, user: data.user, token: data.token };
+    return { success: false, error: data.message || 'Failed to send registration OTP.' };
   } catch (error) {
     return {
       success: false,
-      error: error.message || 'Registration failed. Please try again.',
+      error: error.data?.message || error.message || 'Registration failed. Please try again.',
     };
   }
 }
@@ -129,6 +129,9 @@ export async function registerUser({ username, email, password }) {
 export async function validateCredentials(identifier, password) {
   try {
     const data = await api.login({ identifier, password });
+    if (data.requiresOtp) {
+      return { valid: false, requiresOtp: true, email: data.email, message: data.message, devOtp: data.devOtp };
+    }
     if (data.token && data.user) {
       saveAccountSession(data.user, data.token);
     }

@@ -239,9 +239,9 @@ export default function CalendarView({
   const getEventBadgeStyle = (todo) => {
     if (todo.completed) {
       return {
-        background: 'rgba(16, 185, 129, 0.15)',
-        border: '1px solid #10b981',
-        color: '#10b981',
+        background: 'var(--success-soft)',
+        border: '1px solid var(--success-color)',
+        color: 'var(--success-color)',
       };
     }
 
@@ -483,7 +483,7 @@ export default function CalendarView({
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '14px', fontSize: '0.78rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
           <span style={{ fontWeight: 700 }}>Color Legend:</span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981' }} />
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--success-color)' }} />
             Completed
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>

@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 
 let mongoMemoryServer = null;
 
+// Attach error listener to mongoose connection to prevent Node process from exiting on unhandled error events
+mongoose.connection.on('error', (err) => {
+  console.error('[Mongoose Connection Stream Error]', err ? err.message || err : 'Unknown error');
+});
+
 const sanitizeUri = (uri) => {
   if (!uri) return 'NONE';
   return uri.replace(/:([^@]+)@/, ':***@');
@@ -28,7 +33,7 @@ const connectDB = async () => {
 
   try {
     const conn = await mongoose.connect(primaryUri, {
-      serverSelectionTimeoutMS: isProduction ? 15000 : 3000, // 3s for fast local dev fallback, 15s for cloud Atlas
+      serverSelectionTimeoutMS: isProduction ? 15000 : 3000,
       maxPoolSize: 50,
       minPoolSize: 5,
       socketTimeoutMS: 45000,
@@ -48,12 +53,10 @@ const connectDB = async () => {
     console.error(`Error Stack:\n${primaryError.stack}`);
     console.error('====================================================');
 
-    // IN PRODUCTION: Production MUST ONLY use MongoDB Atlas / Real Database.
-    // Do NOT attempt mongodb-memory-server fallback in production.
     if (isProduction) {
-      console.error('[Database Error] Production environment detected. In-Memory fallback disabled.');
-      console.error('[Database Error] Please set a valid MONGODB_URI in Render dashboard matching your MongoDB Atlas connection string.');
-      throw primaryError;
+      console.error('[Database Warning] Production MongoDB connection failed. Node process will remain alive.');
+      console.error('[Database Warning] Please verify MONGODB_URI environment variable in Render Dashboard.');
+      return null;
     }
 
     // IN DEVELOPMENT: Fallback to MongoMemoryServer for offline local development
@@ -68,7 +71,7 @@ const connectDB = async () => {
       return conn;
     } catch (fallbackError) {
       console.error('[Database Error] Local In-Memory fallback failed:', fallbackError.message);
-      throw primaryError;
+      return null;
     }
   }
 };

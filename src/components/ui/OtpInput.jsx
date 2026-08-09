@@ -113,14 +113,12 @@ export default function OtpInput({ length = 6, value = '', onChange, disabled = 
               fontWeight: 800,
               textAlign: 'center',
               borderRadius: '12px',
-              border: isFilled ? '2.5px solid #7c3aed' : '2px solid #94a3b8',
-              background: isFilled ? '#f3e8ff' : '#f8fafc',
+              border: isFilled ? '2px solid #7c3aed' : '1.5px solid #cbd5e1',
+              background: isFilled ? '#f3e8ff' : '#ffffff',
               color: isFilled ? '#6b21a8' : '#0f172a',
               outline: 'none',
-              transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-              boxShadow: isFilled
-                ? '0 0 0 4px rgba(124, 58, 237, 0.2), 0 4px 12px rgba(124, 58, 237, 0.15)'
-                : '0 2px 4px rgba(0, 0, 0, 0.05)',
+              boxShadow: 'none',
+              transition: 'border-color 0.15s ease, background-color 0.15s ease',
             }}
           />
         );

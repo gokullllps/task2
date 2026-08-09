@@ -29,3 +29,24 @@ export function EmptySearchIllustration({ size = 120 }) {
     </svg>
   );
 }
+
+export function EmptyHomeOverviewIllustration({ size = 90 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="60" cy="60" r="50" fill="var(--accent-soft)" fillOpacity="0.5" />
+      <rect x="35" y="30" width="50" height="60" rx="10" fill="var(--bg-card)" stroke="var(--accent-color)" strokeWidth="2" />
+      <circle cx="60" cy="52" r="14" fill="var(--accent-color)" fillOpacity="0.2" />
+      <path d="M54 52L58 56L66 48" stroke="var(--accent-color)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="45" y="74" width="30" height="4" rx="2" fill="var(--text-muted)" fillOpacity="0.4" />
+    </svg>
+  );
+}
+
+export function PrioritySpotlightIllustration({ size = 70 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="50,15 62,38 87,42 68,60 73,85 50,73 27,85 32,60 13,42 38,38" fill="var(--warning-soft)" stroke="var(--warning-color)" strokeWidth="2" strokeLinejoin="round" />
+      <circle cx="50" cy="50" r="10" fill="var(--warning-color)" fillOpacity="0.3" />
+    </svg>
+  );
+}

@@ -158,13 +158,6 @@ export default function Login({ onLogin }) {
             <RegisterForm onRegisterSuccess={handleAuthResult} />
           )}
         </div>
-
-        <div className="login-footer">
-          <div className="security-notice">
-            <LockIcon size={14} />
-            <span>JWT Auth & bcrypt Password Hashing Protected</span>
-          </div>
-        </div>
       </div>
 
       {/* Real Hostinger Email OTP Verification Modal Overlay */}

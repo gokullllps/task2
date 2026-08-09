@@ -64,7 +64,7 @@ async function request(endpoint, options = {}) {
   } catch (error) {
     if (error.name === 'TypeError' || error.message.includes('Failed to fetch')) {
       console.warn('[API Client] Server connection error:', error.message);
-      const friendlyError = new Error('Backend server is offline or unreachable. Operating in local mode.');
+      const friendlyError = new Error('Unable to connect to server. Please check your internet connection or backend server status.');
       friendlyError.isNetworkError = true;
       throw friendlyError;
     }

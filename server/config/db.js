@@ -28,7 +28,7 @@ const connectDB = async () => {
 
   try {
     const conn = await mongoose.connect(primaryUri, {
-      serverSelectionTimeoutMS: 15000, // 15s for cloud Atlas DNS & SSL handshake
+      serverSelectionTimeoutMS: isProduction ? 15000 : 3000, // 3s for fast local dev fallback, 15s for cloud Atlas
       maxPoolSize: 50,
       minPoolSize: 5,
       socketTimeoutMS: 45000,

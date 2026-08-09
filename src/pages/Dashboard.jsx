@@ -77,7 +77,7 @@ export default function Dashboard({ onLogout, theme, setTheme, user }) {
       }
     } catch (err) {
       console.warn('[Dashboard] Could not fetch data from API server:', err.message);
-      setError('Operating in offline mode or backend server disconnected.');
+      setError(err.message || 'Unable to connect to server.');
     } finally {
       setLoading(false);
     }
@@ -270,7 +270,7 @@ export default function Dashboard({ onLogout, theme, setTheme, user }) {
                   fontSize: '0.875rem',
                 }}
               >
-                Offline mode active.
+                {error}
               </div>
             )}
 
@@ -278,9 +278,11 @@ export default function Dashboard({ onLogout, theme, setTheme, user }) {
             {currentView === 'home' && (
               <HomeView
                 todos={todos}
+                activities={activities}
                 user={currentUserObj}
                 onNavigateToTasks={() => setCurrentView('tasks')}
                 onNavigateToActivity={() => setCurrentView('activity')}
+                onAddTodo={handleAddTodo}
               />
             )}
 

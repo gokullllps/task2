@@ -158,6 +158,15 @@ router.post('/send-register-otp', otpRateLimiter, async (req, res) => {
     });
   } catch (error) {
     console.error('[Send Register OTP Error]:', error);
+    if (error.code === 11000 || (error.message && error.message.includes('E11000'))) {
+      const isEmail = error.message && error.message.includes('email');
+      return res.status(400).json({
+        success: false,
+        message: isEmail
+          ? 'An account with this email already exists.'
+          : 'Username or email already exists. Please try signing in or use different credentials.',
+      });
+    }
     return res.status(500).json({
       success: false,
       message: error.message || 'Failed to send registration OTP code. Please try again.',
@@ -284,6 +293,15 @@ router.post('/verify-register-otp', otpRateLimiter, async (req, res) => {
     });
   } catch (error) {
     console.error('[Verify Register OTP Error]:', error);
+    if (error.code === 11000 || (error.message && error.message.includes('E11000'))) {
+      const isEmail = error.message && error.message.includes('email');
+      return res.status(400).json({
+        success: false,
+        message: isEmail
+          ? 'An account with this email already exists.'
+          : 'Username or email already exists. Please try signing in.',
+      });
+    }
     return res.status(500).json({
       success: false,
       message: error.message || 'Failed to verify registration OTP code.',

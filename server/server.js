@@ -20,8 +20,10 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB asynchronously
+connectDB().catch((err) => {
+  console.error('[Server DB Error] Initial MongoDB connection failed:', err.message);
+});
 
 const app = express();
 

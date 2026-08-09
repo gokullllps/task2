@@ -1,7 +1,7 @@
-const rawApiUrl = import.meta.env.VITE_API_URL || '';
+const rawApiUrl = import.meta.env.VITE_API_URL || 'https://prasklatodo-api.onrender.com';
 const API_BASE_URL = rawApiUrl
   ? (rawApiUrl.endsWith('/api') ? rawApiUrl.replace(/\/+$/, '') : `${rawApiUrl.replace(/\/+$/, '')}/api`)
-  : '/api';
+  : 'https://prasklatodo-api.onrender.com/api';
 
 const TOKEN_KEY = 'todoapp_jwt_token';
 const USER_INFO_KEY = 'todoapp_user_info';
